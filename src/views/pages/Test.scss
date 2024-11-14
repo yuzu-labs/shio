@@ -1,0 +1,12 @@
+.test-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f0f0f0;
+
+  textarea {
+    margin-bottom: 1rem;
+  }
+}

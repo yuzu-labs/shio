@@ -1,11 +1,12 @@
 import { put } from 'redux-saga/effects';
-import { globalActions } from '../reducers/global';
+import { globalActions, reportActions } from '../reducers';
 
-export function* globalloadSummarize() {
+export function* globalLoadSummarize() {
   console.log('[saga] global - Load Summarize');
 
   try {
-    // call APIs
+    // fire load transcript action
+    yield put(reportActions.loadTranscript({ videoId: '04k9vRWLRzI' }));
 
     yield put(globalActions.loadSummarizeSuccess());
   } catch (e: unknown) {
