@@ -1,11 +1,15 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { BearerToken } from '../../models/auth';
 
 interface GlobalState {
   loading: boolean;
+  isLoggedIn: boolean;
+  token?: BearerToken;
 }
 
 const initialState: GlobalState = {
   loading: false,
+  isLoggedIn: false,
 };
 
 const globalSlice = createSlice({
@@ -20,6 +24,22 @@ const globalSlice = createSlice({
     },
     loadSummarizeFail(state) {
       state.loading = false;
+    },
+    login(state, action: PayloadAction<{ loginPlainText: string }>) {
+      state.loading = true;
+    },
+    loginSuccess(state, action: PayloadAction<BearerToken>) {
+      state.loading = false;
+      state.isLoggedIn = true;
+      state.token = action.payload;
+    },
+    loginFail(state) {
+      state.loading = false;
+      state.isLoggedIn = false;
+    },
+    logout(state) {
+      state.isLoggedIn = false;
+      state.token = undefined;
     },
   },
 });

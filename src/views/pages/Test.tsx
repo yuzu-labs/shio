@@ -3,6 +3,7 @@ import './Test.scss';
 import { globalActions } from '../../store/reducers';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { TEST_LOGIN_PLAIN_TEXT } from '../../utils/config';
 
 type Props = {};
 
@@ -13,6 +14,13 @@ const Test = (props: Props) => {
   return (
     <div className="test-container">
       <textarea name="raw-text" id="raw-text"></textarea>
+      <button
+        id="login"
+        onClick={() => {
+          dispatch(globalActions.login({ loginPlainText: TEST_LOGIN_PLAIN_TEXT || '' }));
+        }}>
+        Login
+      </button>
       <button
         id="summarize"
         onClick={() => {
