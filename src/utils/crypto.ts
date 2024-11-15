@@ -18,22 +18,25 @@ export class RSAEncryptionClient {
     if (!RSA_PUBLIC_KEY) {
       throw new Error('RSA public key not found');
     }
-    const keyBuffer = Uint8Array.from(atob(RSA_PUBLIC_KEY), (c) => c.charCodeAt(0));
+    const keyBuffer = new Uint8Array(
+      atob(RSA_PUBLIC_KEY)
+        .split('')
+        .map((c) => c.charCodeAt(0))
+    );
 
-    this.publicKey = await crypto.subtle.importKey(
+    this.publicKey = await window.crypto.subtle.importKey(
       'spki',
-      keyBuffer.buffer,
+      keyBuffer,
       {
         name: 'RSA-OAEP',
-        hash: 'SHA-512',
+        hash: 'SHA-256',
       },
-      true,
+      false,
       ['encrypt']
     );
   }
 
   public async encrypt(data: string): Promise<string> {
-    console.log(this.publicKey);
     if (!this.publicKey) {
       throw new Error('Public key not loaded');
     }
@@ -41,7 +44,7 @@ export class RSAEncryptionClient {
     const encoder = new TextEncoder();
     const dataBuffer = encoder.encode(data);
 
-    const encryptedBuffer = await crypto.subtle.encrypt(
+    const encryptedBuffer = await window.crypto.subtle.encrypt(
       {
         name: 'RSA-OAEP',
       },

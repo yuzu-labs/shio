@@ -3,6 +3,7 @@ import { globalActions, reportActions } from '../reducers';
 import { authAPI } from '../apis';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { RSAEncryptionClient } from '../../utils/crypto';
+import { AuthAPIResponse } from '../../models/api';
 
 export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) {
   console.log('[saga] global - Login');
@@ -13,12 +14,15 @@ export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) 
       [encryptionClient, encryptionClient.encrypt],
       action.payload.loginPlainText
     );
-    console.log(loginCipherString);
 
-    // const response = yield call(authAPI.login, loginCipherString);
+    const response: AuthAPIResponse = yield call(authAPI.login, loginCipherString);
+
+    if (!response.status) {
+      throw new Error('Login failed');
+    }
 
     // fire login success action
-    yield put(globalActions.loginSuccess({ accessToken: '123', expiredAt: 3600 }));
+    yield put(globalActions.loginSuccess(response.token));
   } catch (e: unknown) {
     if (e instanceof DOMException && e.name === 'OperationError') {
       const error = e as DOMException;

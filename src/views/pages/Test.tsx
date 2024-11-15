@@ -8,7 +8,7 @@ import { TEST_LOGIN_PLAIN_TEXT } from '../../utils/config';
 type Props = {};
 
 const Test = (props: Props) => {
-  const loading = useSelector((state: RootState) => state.global.loading);
+  const { loading, token } = useSelector((state: RootState) => state.global);
   const dispatch = useDispatch();
 
   return (
@@ -30,6 +30,7 @@ const Test = (props: Props) => {
         Summarize
       </button>
       <pre>{loading.toString()}</pre>
+      <pre>{JSON.stringify(token, null, 4)}</pre>
     </div>
   );
 };
