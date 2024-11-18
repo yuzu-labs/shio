@@ -22,6 +22,14 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Create .env File
+        run: |
+          echo "REACT_APP_API_HOST=${{ vars.REACT_APP_API_HOST }}" >> .env
+          echo "REACT_APP_RSA_PUBLIC_KEY=${{ secrets.REACT_APP_RSA_PUBLIC_KEY }}" >> .env
+          echo "REACT_APP_AES_KEY=${{ secrets.REACT_APP_AES_KEY }}" >> .env
+          VERSION=$(node -p "require('./package.json').version")
+          echo "REACT_APP_VERSION=${VERSION}" >> .env
+
       - name: Build Project
         run: yarn build
 

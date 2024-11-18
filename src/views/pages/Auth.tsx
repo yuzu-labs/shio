@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { globalActions } from '../../store/reducers';
 import { RootState } from '../../store';
+import { VERSION } from '../../utils/config';
 
 type Props = {};
 
@@ -71,6 +72,9 @@ const Auth = (props: Props) => {
             </Button>
           </Stack>
         </form>
+        <Typography level="body-sm" sx={{ textAlign: 'center' }}>
+          Version: {VERSION}
+        </Typography>
       </Stack>
     </Box>
   );
