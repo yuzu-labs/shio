@@ -4,11 +4,12 @@ import { DefaultLayout } from './views/layouts';
 import { Provider } from 'react-redux';
 import store from './store';
 import { CssBaseline, CssVarsProvider } from '@mui/joy';
+import YuzuTheme from './assets/themes/Yuzu';
 
 const App = () => {
   return (
     <Provider store={store}>
-      <CssVarsProvider>
+      <CssVarsProvider theme={YuzuTheme}>
         <CssBaseline />
         <BrowserRouter>
           <Routes>

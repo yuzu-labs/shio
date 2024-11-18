@@ -10,7 +10,6 @@ type Props = {};
 const Test = (props: Props) => {
   const { loading, token } = useSelector((state: RootState) => state.global);
   const dispatch = useDispatch();
-
   return (
     <div className="test-container">
       <textarea name="raw-text" id="raw-text"></textarea>

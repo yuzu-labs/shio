@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BearerToken } from '../../models/auth';
+import { SystemError } from '../../models/global';
 
 interface GlobalState {
   loading: boolean;
   isLoggedIn: boolean;
+  error?: SystemError;
   token?: BearerToken;
 }
 
@@ -25,6 +27,9 @@ const globalSlice = createSlice({
     loadSummarizeFail(state) {
       state.loading = false;
     },
+    checkLogin(state) {
+      state.loading = true;
+    },
     login(state, action: PayloadAction<{ loginPlainText: string }>) {
       state.loading = true;
     },
@@ -33,9 +38,10 @@ const globalSlice = createSlice({
       state.isLoggedIn = true;
       state.token = action.payload;
     },
-    loginFail(state) {
+    loginFail(state, action: PayloadAction<SystemError>) {
       state.loading = false;
       state.isLoggedIn = false;
+      state.error = action.payload;
     },
     logout(state) {
       state.isLoggedIn = false;
