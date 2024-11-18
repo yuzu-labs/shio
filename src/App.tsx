@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { DefaultLayout } from './views/layouts';
 import { Provider } from 'react-redux';
 import store from './store';
