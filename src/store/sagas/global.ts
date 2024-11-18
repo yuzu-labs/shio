@@ -111,7 +111,24 @@ export function* globalLoadSummarize() {
 
     yield put(globalActions.loadSummarizeSuccess());
   } catch (e: unknown) {
-    console.error(e);
-    yield put(globalActions.loadSummarizeFail());
+    let systemError: SystemError = { relatedAction: globalActions.loadSummarize.type, title: '', content: '' };
+
+    if (e instanceof AxiosError) {
+      const error = e as AxiosError;
+      if (error.response && error.response.status === 401) {
+        systemError = { ...systemError, title: 'Unauthorized', content: 'Invalid login credentials' };
+      } else {
+        systemError = {
+          ...systemError,
+          title: 'Network Error',
+          content: 'An error occurred while talking to the server',
+        };
+      }
+    } else {
+      console.error('An unexpected error occurred:', e);
+      systemError = { ...systemError, title: 'Error', content: 'An unexpected error occurred' };
+    }
+
+    yield put(globalActions.loadSummarizeFail(systemError));
   }
 }

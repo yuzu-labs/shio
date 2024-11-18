@@ -1,18 +1,21 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call } from 'redux-saga/effects';
+import { call, put } from 'redux-saga/effects';
 import { reportAPI } from '../apis';
 import { VideoMetadata } from '../../models/report';
-
+import { TranscriptAPIResponse } from '../../models/api';
+import { reportActions } from '../reducers';
 export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
   console.log('[saga] report - Load Transcript');
 
   try {
-    const response: string = yield call(reportAPI.getTranscript, action.payload.videoId);
+    const response: TranscriptAPIResponse = yield call(reportAPI.getTranscript, action.payload.videoId);
 
-    console.log('Transcript loaded');
-    console.log(response);
+    if (!response.status) {
+      throw new Error('Failed to load transcript');
+    }
+
+    yield put(reportActions.updateTranscript(response.data));
   } catch (e: unknown) {
-    console.error(e);
-    // yield put(reportActions.loadTranscriptFail());
+    throw e;
   }
 }

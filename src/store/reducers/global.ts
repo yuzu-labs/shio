@@ -24,8 +24,9 @@ const globalSlice = createSlice({
     loadSummarizeSuccess(state) {
       state.loading = false;
     },
-    loadSummarizeFail(state) {
+    loadSummarizeFail(state, action: PayloadAction<SystemError>) {
       state.loading = false;
+      state.error = action.payload;
     },
     checkLogin(state) {
       state.loading = true;

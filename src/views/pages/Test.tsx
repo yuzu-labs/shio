@@ -8,6 +8,7 @@ type Props = {};
 
 const Test = (props: Props) => {
   const { loading, token } = useSelector((state: RootState) => state.global);
+  const { transcript } = useSelector((state: RootState) => state.report);
   const dispatch = useDispatch();
   return (
     <div className="test-container">
@@ -22,6 +23,7 @@ const Test = (props: Props) => {
       </button>
       <pre>{loading.toString()}</pre>
       <pre>{JSON.stringify(token, null, 4)}</pre>
+      <pre>{JSON.stringify(transcript, null, 4)}</pre>
     </div>
   );
 };

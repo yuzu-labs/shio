@@ -3,9 +3,9 @@ import client from '../../utils/http';
 const reportAPI = {
   getTranscript: (videoId: string) =>
     client
-      .get(`https://youtubetranscript.com`, {
+      .get(`/transcript`, {
         params: {
-          server_vid2: videoId,
+          vid: videoId,
         },
       })
       .then((response) => response.data),
