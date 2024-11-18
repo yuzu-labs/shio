@@ -102,12 +102,12 @@ export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) 
   }
 }
 
-export function* globalLoadSummarize() {
+export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>) {
   console.log('[saga] global - Load Summarize');
 
   try {
     // fire load transcript action
-    yield put(reportActions.loadTranscript({ videoId: '04k9vRWLRzI' }));
+    yield put(reportActions.loadTranscript({ videoId: action.payload.videoId }));
 
     yield put(globalActions.loadSummarizeSuccess());
   } catch (e: unknown) {

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './Test.scss';
-import { globalActions } from '../../store/reducers';
+import { globalActions, reportActions } from '../../store/reducers';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
@@ -10,16 +10,27 @@ const Test = (props: Props) => {
   const { loading, token } = useSelector((state: RootState) => state.global);
   const { transcript } = useSelector((state: RootState) => state.report);
   const dispatch = useDispatch();
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   return (
     <div className="test-container">
-      <textarea name="raw-text" id="raw-text"></textarea>
+      <textarea ref={textAreaRef} name="raw-text" id="raw-text"></textarea>
       <button
         id="summarize"
         onClick={() => {
-          console.log('Summarize button clicked');
-          dispatch(globalActions.loadSummarize());
+          // vr9Rd8tNjTs
+          const text = textAreaRef.current?.value;
+          if (!text) return;
+          console.log('Summarize:', text);
+          dispatch(globalActions.loadSummarize({ videoId: text }));
         }}>
         Summarize
+      </button>
+      <button
+        id="overview"
+        onClick={() => {
+          dispatch(reportActions.loadOverview(transcript ?? { videoId: '', textSections: [] }));
+        }}>
+        Load Overview
       </button>
       <pre>{loading.toString()}</pre>
       <pre>{JSON.stringify(token, null, 4)}</pre>

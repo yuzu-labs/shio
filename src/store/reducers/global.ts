@@ -18,7 +18,7 @@ const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
-    loadSummarize(state) {
+    loadSummarize(state, action: PayloadAction<{ videoId: string }>) {
       state.loading = true;
     },
     loadSummarizeSuccess(state) {
