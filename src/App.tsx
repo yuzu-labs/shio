@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom';
 import { DefaultLayout } from './views/layouts';
 import { Provider } from 'react-redux';
 import store from './store';
@@ -11,11 +11,11 @@ const App = () => {
     <Provider store={store}>
       <CssVarsProvider theme={YuzuTheme}>
         <CssBaseline />
-        <BrowserRouter>
+        <HashRouter>
           <Routes>
             <Route path="/*" element={<DefaultLayout />} />
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </CssVarsProvider>
     </Provider>
   );
