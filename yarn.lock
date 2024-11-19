@@ -2387,6 +2387,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/dom-chromium-ai@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/dom-chromium-ai/-/dom-chromium-ai-0.0.2.tgz#d65388f91fdea7a890f6b7b35c146d0a368404b7"
+  integrity sha512-5TyjYquxp5sJeNncqoQMzUvBbxZkd2s+KrzKaCwM7cSoHcG2+kpMuK8Ve04bGGWey6nL7+HQqeh9/sWDmcN6eQ==
+
 "@types/eslint-scope@^3.7.7":
   version "3.7.7"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.7.tgz#3108bd5f18b0cdb277c867b3dd449c9ed7079ac5"
@@ -2460,6 +2465,18 @@
     "@types/express-serve-static-core" "^4.17.33"
     "@types/qs" "*"
     "@types/serve-static" "*"
+
+"@types/gapi.youtube@^3.0.40":
+  version "3.0.40"
+  resolved "https://registry.yarnpkg.com/@types/gapi.youtube/-/gapi.youtube-3.0.40.tgz#7c365ef9321ac40a09a406605e8fbc16cef5701d"
+  integrity sha512-y/cY/t+5kqCTWbwSGCYLSQ6wdEKO4uQvdFzTLqulY+ZOw5CTQZ/14S0logV9z1spNpVgP7FCqgDe4bvgWqhPdQ==
+  dependencies:
+    "@types/gapi" "*"
+
+"@types/gapi@*":
+  version "0.0.47"
+  resolved "https://registry.yarnpkg.com/@types/gapi/-/gapi-0.0.47.tgz#3cef0a6a2accf4fc1405d08e2e001759cf440f56"
+  integrity sha512-/ZsLuq6BffMgbKMtZyDZ8vwQvTyKhKQ1G2K6VyWCgtHHhfSSXbk4+4JwImZiTjWNXfI2q1ZStAwFFHSkNoTkHA==
 
 "@types/graceful-fs@^4.1.2":
   version "4.1.9"
@@ -10178,6 +10195,11 @@ use-sync-external-store@^1.0.0:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.2.tgz#c3b6390f3a30eba13200d2302dcdf1e7b57b2ef9"
   integrity sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==
+
+user-agent-data-types@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/user-agent-data-types/-/user-agent-data-types-0.4.2.tgz#3bbd3662022c3fb9d0c2f7449b6cdd412a3f9e0d"
+  integrity sha512-jXep3kO/dGNmDOkbDa8ccp4QArgxR4I76m3QVcJ1aOF0B9toc+YtSXtX5gLdDTZXyWlpQYQrABr6L1L2GZOghw==
 
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"

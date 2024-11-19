@@ -1,14 +1,15 @@
 import client from '../../utils/http';
 
-const reportAPI = {
-  getTranscript: (videoId: string) =>
+const youtubeAPI = {
+  getVideos: (videoId: string, part: string) =>
     client
-      .get(`/transcript`, {
+      .get('/youtube/videos', {
         params: {
           vid: videoId,
+          part,
         },
       })
       .then((response) => response.data),
 };
 
-export default reportAPI;
+export default youtubeAPI;

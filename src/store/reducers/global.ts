@@ -18,14 +18,15 @@ const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
-    loadSummarize(state) {
+    loadSummarize(state, action: PayloadAction<{ videoId: string }>) {
       state.loading = true;
     },
     loadSummarizeSuccess(state) {
       state.loading = false;
     },
-    loadSummarizeFail(state) {
+    loadSummarizeFail(state, action: PayloadAction<SystemError>) {
       state.loading = false;
+      state.error = action.payload;
     },
     checkLogin(state) {
       state.loading = true;

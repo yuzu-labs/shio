@@ -1,18 +1,94 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call } from 'redux-saga/effects';
+import { call, put } from 'redux-saga/effects';
 import { reportAPI } from '../apis';
 import { VideoMetadata } from '../../models/report';
+import { TranscriptAPIResponse } from '../../models/api';
+import { reportActions } from '../reducers';
+import { Transcript } from '../../models/transcript';
+import { ChromeAI } from '../../utils/ai';
+import { SystemError } from '../../models/global';
 
 export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
   console.log('[saga] report - Load Transcript');
 
-  try {
-    const response: string = yield call(reportAPI.getTranscript, action.payload.videoId);
+  let systemError: SystemError = { relatedAction: reportActions.loadTranscript.type, title: '', content: '' };
 
-    console.log('Transcript loaded');
-    console.log(response);
+  try {
+    const response: TranscriptAPIResponse = yield call(reportAPI.getTranscript, action.payload.videoId);
+
+    if (!response.status) {
+      systemError = {
+        ...systemError,
+        title: 'Transcript Not Found',
+        content: 'Error occurred while fetching transcript',
+      };
+      yield put(reportActions.loadTranscriptFail(systemError));
+      return;
+    }
+
+    yield put(reportActions.updateTranscript(response.data));
   } catch (e: unknown) {
-    console.error(e);
-    // yield put(reportActions.loadTranscriptFail());
+    const systemError: SystemError = {
+      relatedAction: reportActions.loadTranscript.type,
+      title: 'Transcript Load Error',
+      content: e instanceof Error ? e.message : 'Unknown error',
+    };
+    yield put(reportActions.loadTranscriptFail(systemError));
+  }
+}
+
+export function* reportLoadOverview(action: PayloadAction<Transcript>) {
+  console.log('[saga] report - Load Overview');
+
+  let systemError: SystemError = { relatedAction: reportActions.loadOverview.type, title: '', content: '' };
+
+  try {
+    if (!action.payload || !action.payload.videoId) {
+      systemError = {
+        ...systemError,
+        title: 'Invalid Transcript',
+        content: 'Invalid transcript',
+      };
+      yield put(reportActions.loadOverviewFail(systemError));
+      return;
+    }
+
+    const text: string = action.payload.textSections.map((section) => section.text).join(' ');
+
+    if (!text) {
+      systemError = {
+        ...systemError,
+        title: 'Empty Transcript',
+        content: 'No text to summarize',
+      };
+      yield put(reportActions.loadOverviewFail(systemError));
+      return;
+    }
+
+    console.log(`Total characters in transcript: ${text.length}`);
+
+    if (text.length > 4000) {
+      systemError = {
+        ...systemError,
+        title: 'Text Too Long',
+        content: 'Text is too long (over 4000 characters) to summarize',
+      };
+      yield put(reportActions.loadOverviewFail(systemError));
+      return;
+    }
+
+    const AIClient: ChromeAI.Client = yield call(ChromeAI.Client.getInstance);
+    const overview: string = yield call([AIClient, AIClient.summarize], text, 'headline', 'plain-text', 'medium');
+
+    console.log('Overview:', overview);
+
+    yield put(reportActions.updateOverview(overview));
+  } catch (e: unknown) {
+    const systemError: SystemError = {
+      relatedAction: reportActions.loadTranscript.type,
+      title: 'Overview Load Error',
+      content: e instanceof Error ? e.message : 'Unknown error',
+    };
+    yield put(reportActions.loadOverviewFail(systemError));
   }
 }
