@@ -12,3 +12,9 @@ export type TranscriptAPIResponse = BaseAPIResponse & {
 type BaseAPIResponse = {
   status: boolean;
 };
+
+export namespace YoutubeAPIResponse {
+  export type Video = BaseAPIResponse & {
+    videos: GoogleApiYouTubePaginationInfo<GoogleApiYouTubeVideoResource>;
+  };
+}

@@ -61,6 +61,7 @@
     "@babel/plugin-transform-react-jsx": "^7.14.9",
     "@testing-library/dom": ">=7.21.4",
     "@types/dom-chromium-ai": "^0.0.2",
+    "@types/gapi.youtube": "^3.0.40",
     "serve": "^14.2.4",
     "user-agent-data-types": "^0.4.2"
   }

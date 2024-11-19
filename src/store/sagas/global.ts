@@ -1,12 +1,15 @@
-import { call, put } from 'redux-saga/effects';
+import { call, put, select, take } from 'redux-saga/effects';
 import { globalActions, reportActions } from '../reducers';
 import { authAPI } from '../apis';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { AESClient, RSAEncryptionClient } from '../../utils/crypto';
-import { AuthAPIResponse } from '../../models/api';
+import { AuthAPIResponse, YoutubeAPIResponse } from '../../models/api';
 import { AxiosError } from 'axios';
 import { SystemError } from '../../models/global';
 import { BearerToken } from '../../models/auth';
+import youtubeAPI from '../apis/youtube';
+import { RootState } from '..';
+import { Transcript } from '../../models/transcript';
 
 export function* globalCheckLogin() {
   console.log('[saga] global - Check Login');
@@ -105,14 +108,81 @@ export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) 
 export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>) {
   console.log('[saga] global - Load Summarize');
 
+  let systemError: SystemError = { relatedAction: globalActions.loadSummarize.type, title: '', content: '' };
+
   try {
+    const response: YoutubeAPIResponse.Video = yield call(youtubeAPI.getVideos, action.payload.videoId, 'id');
+
+    if (!response.status || response.videos.pageInfo.totalResults === 0) {
+      systemError = {
+        ...systemError,
+        title: 'Video Not Found',
+        content: 'Youtube video not found',
+      };
+      yield put(globalActions.loadSummarizeFail(systemError));
+      return;
+    }
+
     // fire load transcript action
     yield put(reportActions.loadTranscript({ videoId: action.payload.videoId }));
 
+    // wait for the transcript to be updated
+    const { type: transcriptType, payload: transcriptPayload } = yield take([
+      reportActions.updateTranscript.type,
+      reportActions.loadTranscriptFail.type,
+    ]);
+
+    // handle exception
+    if (transcriptType === reportActions.loadOverviewFail.type) {
+      const error = transcriptPayload as SystemError;
+      systemError = { ...systemError, title: error.title, content: error.content };
+      yield put(globalActions.loadSummarizeFail(systemError));
+      return;
+    }
+
+    const transcript: Transcript | undefined = yield select((state: RootState) => state.report.transcript);
+
+    if (!transcript) {
+      systemError = {
+        ...systemError,
+        title: 'Transcript Not Found',
+        content: 'Error occurred while fetching transcript',
+      };
+      yield put(globalActions.loadSummarizeFail(systemError));
+      return;
+    }
+
+    // fire load overview action
+    yield put(reportActions.loadOverview(transcript));
+
+    // wait for the overview to be updated
+    const { type: overviewType, payload: overviewPayload } = yield take([
+      reportActions.updateOverview.type,
+      reportActions.loadOverviewFail.type,
+    ]);
+
+    // handle exception
+    if (overviewType === reportActions.loadOverviewFail.type) {
+      const error = overviewPayload as SystemError;
+      systemError = { ...systemError, title: error.title, content: error.content };
+      yield put(globalActions.loadSummarizeFail(systemError));
+      return;
+    }
+
+    const overview: string | undefined = yield select((state: RootState) => state.report.overview);
+
+    if (!overview) {
+      systemError = {
+        ...systemError,
+        title: 'Overview Not Found',
+        content: 'Error occurred while fetching overview',
+      };
+      yield put(globalActions.loadSummarizeFail(systemError));
+      return;
+    }
+
     yield put(globalActions.loadSummarizeSuccess());
   } catch (e: unknown) {
-    let systemError: SystemError = { relatedAction: globalActions.loadSummarize.type, title: '', content: '' };
-
     if (e instanceof AxiosError) {
       const error = e as AxiosError;
       if (error.response && error.response.status === 401) {

@@ -1,14 +1,25 @@
 import { Box, Button, FormControl, FormHelperText, Input, Stack, Typography } from '@mui/joy';
-import React, { useState } from 'react';
-// import { globalActions } from '../../store/reducers';
-// import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { getYoutubeVideoId, isValidYoutubeVideoID } from '../../utils';
+import { globalActions } from '../../store/reducers';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 function App() {
   const [validated, setValidated] = useState(false);
   const [urlValid, setUrlValid] = useState(false);
-  const [urlErrorMessage, setUrlErrorMessage] = useState('The URL is invalid.');
+  const [urlErrorMessage, setUrlErrorMessage] = useState('Please enter a URL.');
 
-  // const dispatch = useDispatch();
+  const { loading, error } = useSelector((state: RootState) => state.global);
+  const { overview } = useSelector((state: RootState) => state.report);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!error || error.relatedAction !== globalActions.loadSummarize.type) return;
+
+    setUrlValid(false);
+    setUrlErrorMessage(error.content);
+  }, [error]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     const form = event.currentTarget;
@@ -22,16 +33,23 @@ function App() {
     const fd = new FormData(form);
     const yUrl = fd.get('youtube-url');
 
+    setUrlValid(false);
+
     if (!yUrl) {
-      setUrlValid(false);
-      setUrlErrorMessage('The URL is invalid.');
+      setUrlErrorMessage('Please enter a URL.');
+      return;
+    }
+
+    const videoId = getYoutubeVideoId(yUrl.toString());
+
+    if (!videoId || !isValidYoutubeVideoID(videoId)) {
+      setUrlErrorMessage('Please enter a valid YouTube URL.');
       return;
     }
 
     setUrlValid(true);
 
-    // dispatch(globalActions.login({ loginPlainText: yUrl.toString() }));
-    console.log(`Summarize the video: ${yUrl.toString()}`);
+    dispatch(globalActions.loadSummarize({ videoId }));
   };
 
   return (
@@ -63,11 +81,15 @@ function App() {
                 <FormHelperText sx={{ position: 'absolute', top: '36px' }}>{urlErrorMessage}</FormHelperText>
               )}
             </FormControl>
-            <Button variant="soft" type="submit">
+            <Button loading={loading} variant="soft" type="submit">
               Summarize
             </Button>
           </Stack>
         </form>
+        {/* TODO: remove test text area */}
+        <Typography level="body-sm" sx={{ textAlign: 'center' }}>
+          {overview}
+        </Typography>
       </Stack>
     </Box>
   );
