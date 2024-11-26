@@ -47,8 +47,16 @@ const globalSlice = createSlice({
       state.error = action.payload;
     },
     logout(state) {
+      if (localStorage.getItem('token')) {
+        localStorage.removeItem('token');
+      }
+
+      state.loading = false;
       state.isLoggedIn = false;
       state.token = undefined;
+    },
+    updateError(state, action: PayloadAction<SystemError>) {
+      state.error = action.payload;
     },
     openErrorToast(state) {
       state.errorToastOpen = true;

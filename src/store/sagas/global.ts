@@ -10,6 +10,7 @@ import { BearerToken } from '../../models/auth';
 import youtubeAPI from '../apis/youtube';
 import { RootState } from '..';
 import { Transcript } from '../../models/transcript';
+import { SystemErrorCode } from '../../models/enum/global';
 
 export function* globalCheckLogin() {
   console.log('[saga] global - Check Login');
@@ -18,7 +19,8 @@ export function* globalCheckLogin() {
     const encryptedToken: string | null = localStorage.getItem('token');
 
     if (!encryptedToken) {
-      throw new Error('Token not found');
+      yield put(globalActions.logout());
+      return;
     }
 
     const aesClient: AESClient = yield call(AESClient.getInstance);
@@ -27,19 +29,35 @@ export function* globalCheckLogin() {
 
     // Check if the token is expired
     if (token.expiredAt < Date.now()) {
-      throw new Error('Token expired');
+      yield put(globalActions.logout());
+      return;
     }
 
     yield put(globalActions.loginSuccess(token));
   } catch (e: unknown) {
-    let systemError: SystemError = { relatedAction: globalActions.checkLogin.type, title: '', content: '' };
+    let systemError: SystemError = {
+      relatedAction: globalActions.checkLogin.type,
+      title: '',
+      content: '',
+      code: SystemErrorCode.SYSTEM_OTHER_ERROR,
+    };
 
     if (e instanceof Error) {
       const error = e as Error;
-      systemError = { ...systemError, title: e.name ?? 'Error', content: error.message };
+      systemError = {
+        ...systemError,
+        title: e.name ?? 'Error',
+        content: error.message,
+        code: SystemErrorCode.SYSTEM_OTHER_ERROR,
+      };
     } else {
       console.error('An unexpected error occurred:', e);
-      systemError = { ...systemError, title: 'Error', content: 'An unexpected error occurred' };
+      systemError = {
+        ...systemError,
+        title: 'Error',
+        content: 'An unexpected error occurred',
+        code: SystemErrorCode.SYSTEM_OTHER_ERROR,
+      };
     }
 
     yield put(globalActions.loginFail(systemError));
@@ -76,7 +94,12 @@ export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) 
 
     yield put(globalActions.loginSuccess(response.token));
   } catch (e: unknown) {
-    let systemError: SystemError = { relatedAction: globalActions.login.type, title: '', content: '' };
+    let systemError: SystemError = {
+      relatedAction: globalActions.login.type,
+      title: '',
+      content: '',
+      code: SystemErrorCode.SYSTEM_OTHER_ERROR,
+    };
 
     if (e instanceof DOMException && e.name === 'OperationError') {
       const error = e as DOMException;
@@ -84,22 +107,34 @@ export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) 
         ...systemError,
         title: 'Encryption Error',
         content: 'An error occurred while encrypting the login credentials',
+        code: SystemErrorCode.SYSTEM_OTHER_ERROR,
       };
       console.error('Encryption operation failed:', error);
     } else if (e instanceof AxiosError) {
       const error = e as AxiosError;
       if (error.response && error.response.status === 401) {
-        systemError = { ...systemError, title: 'Unauthorized', content: 'Invalid login credentials' };
+        systemError = {
+          ...systemError,
+          title: 'Unauthorized',
+          content: 'Invalid login credentials',
+          code: SystemErrorCode.PASSWORD_UNMATCHED,
+        };
       } else {
         systemError = {
           ...systemError,
           title: 'Network Error',
           content: 'An error occurred while talking to the server',
+          code: SystemErrorCode.CONNECTION_FAILED,
         };
       }
     } else {
       console.error('An unexpected error occurred:', e);
-      systemError = { ...systemError, title: 'Error', content: 'An unexpected error occurred' };
+      systemError = {
+        ...systemError,
+        title: 'Error',
+        content: 'An unexpected error occurred',
+        code: SystemErrorCode.SYSTEM_OTHER_ERROR,
+      };
     }
     yield put(globalActions.loginFail(systemError));
   }
@@ -108,7 +143,12 @@ export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) 
 export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>) {
   console.log('[saga] global - Load Summarize');
 
-  let systemError: SystemError = { relatedAction: globalActions.loadSummarize.type, title: '', content: '' };
+  let systemError: SystemError = {
+    relatedAction: globalActions.loadSummarize.type,
+    title: '',
+    content: '',
+    code: SystemErrorCode.SYSTEM_OTHER_ERROR,
+  };
 
   try {
     const response: YoutubeAPIResponse.Video = yield call(youtubeAPI.getVideos, action.payload.videoId, 'id');
@@ -118,6 +158,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
         ...systemError,
         title: 'Video Not Found',
         content: 'Youtube video not found',
+        code: SystemErrorCode.VIDEO_NOT_FOUND,
       };
       yield put(globalActions.loadSummarizeFail(systemError));
       return;
@@ -135,7 +176,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
     // handle exception
     if (transcriptType === reportActions.loadOverviewFail.type) {
       const error = transcriptPayload as SystemError;
-      systemError = { ...systemError, title: error.title, content: error.content };
+      systemError = { ...systemError, title: error.title, content: error.content, code: error.code };
       yield put(globalActions.loadSummarizeFail(systemError));
       return;
     }
@@ -147,6 +188,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
         ...systemError,
         title: 'Transcript Not Found',
         content: 'Error occurred while fetching transcript',
+        code: SystemErrorCode.DIALOGUE_NOT_FOUND,
       };
       yield put(globalActions.loadSummarizeFail(systemError));
       return;
@@ -164,7 +206,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
     // handle exception
     if (overviewType === reportActions.loadOverviewFail.type) {
       const error = overviewPayload as SystemError;
-      systemError = { ...systemError, title: error.title, content: error.content };
+      systemError = { ...systemError, title: error.title, content: error.content, code: error.code };
       yield put(globalActions.loadSummarizeFail(systemError));
       return;
     }
@@ -176,6 +218,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
         ...systemError,
         title: 'Overview Not Found',
         content: 'Error occurred while fetching overview',
+        code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
       };
       yield put(globalActions.loadSummarizeFail(systemError));
       return;
@@ -186,17 +229,28 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
     if (e instanceof AxiosError) {
       const error = e as AxiosError;
       if (error.response && error.response.status === 401) {
-        systemError = { ...systemError, title: 'Unauthorized', content: 'Invalid login credentials' };
+        systemError = {
+          ...systemError,
+          title: 'Unauthorized',
+          content: 'Authentication Failed',
+          code: SystemErrorCode.SESSION_EXPIRED,
+        };
       } else {
         systemError = {
           ...systemError,
           title: 'Network Error',
           content: 'An error occurred while talking to the server',
+          code: SystemErrorCode.CONNECTION_FAILED,
         };
       }
     } else {
       console.error('An unexpected error occurred:', e);
-      systemError = { ...systemError, title: 'Error', content: 'An unexpected error occurred' };
+      systemError = {
+        ...systemError,
+        title: 'Error',
+        content: 'An unexpected error occurred',
+        code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
+      };
     }
 
     yield put(globalActions.loadSummarizeFail(systemError));

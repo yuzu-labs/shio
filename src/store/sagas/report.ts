@@ -7,11 +7,17 @@ import { reportActions } from '../reducers';
 import { Transcript } from '../../models/transcript';
 import { ChromeAI } from '../../utils/ai';
 import { SystemError } from '../../models/global';
+import { SystemErrorCode } from '../../models/enum/global';
 
 export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
   console.log('[saga] report - Load Transcript');
 
-  let systemError: SystemError = { relatedAction: reportActions.loadTranscript.type, title: '', content: '' };
+  let systemError: SystemError = {
+    relatedAction: reportActions.loadTranscript.type,
+    title: '',
+    content: '',
+    code: SystemErrorCode.TRANSCRIPTION_ERROR,
+  };
 
   try {
     const response: TranscriptAPIResponse = yield call(reportAPI.getTranscript, action.payload.videoId);
@@ -21,6 +27,7 @@ export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
         ...systemError,
         title: 'Transcript Not Found',
         content: 'Error occurred while fetching transcript',
+        code: SystemErrorCode.DIALOGUE_NOT_FOUND,
       };
       yield put(reportActions.loadTranscriptFail(systemError));
       return;
@@ -32,6 +39,7 @@ export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
       relatedAction: reportActions.loadTranscript.type,
       title: 'Transcript Load Error',
       content: e instanceof Error ? e.message : 'Unknown error',
+      code: SystemErrorCode.TRANSCRIPTION_ERROR,
     };
     yield put(reportActions.loadTranscriptFail(systemError));
   }
@@ -40,7 +48,12 @@ export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
 export function* reportLoadOverview(action: PayloadAction<Transcript>) {
   console.log('[saga] report - Load Overview');
 
-  let systemError: SystemError = { relatedAction: reportActions.loadOverview.type, title: '', content: '' };
+  let systemError: SystemError = {
+    relatedAction: reportActions.loadOverview.type,
+    title: '',
+    content: '',
+    code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
+  };
 
   try {
     if (!action.payload || !action.payload.videoId) {
@@ -48,6 +61,7 @@ export function* reportLoadOverview(action: PayloadAction<Transcript>) {
         ...systemError,
         title: 'Invalid Transcript',
         content: 'Invalid transcript',
+        code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
       };
       yield put(reportActions.loadOverviewFail(systemError));
       return;
@@ -60,6 +74,7 @@ export function* reportLoadOverview(action: PayloadAction<Transcript>) {
         ...systemError,
         title: 'Empty Transcript',
         content: 'No text to summarize',
+        code: SystemErrorCode.DIALOGUE_NOT_FOUND,
       };
       yield put(reportActions.loadOverviewFail(systemError));
       return;
@@ -72,6 +87,7 @@ export function* reportLoadOverview(action: PayloadAction<Transcript>) {
         ...systemError,
         title: 'Text Too Long',
         content: 'Text is too long (over 4000 characters) to summarize',
+        code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
       };
       yield put(reportActions.loadOverviewFail(systemError));
       return;
@@ -88,6 +104,7 @@ export function* reportLoadOverview(action: PayloadAction<Transcript>) {
       relatedAction: reportActions.loadTranscript.type,
       title: 'Overview Load Error',
       content: e instanceof Error ? e.message : 'Unknown error',
+      code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
     };
     yield put(reportActions.loadOverviewFail(systemError));
   }
