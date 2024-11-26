@@ -34,8 +34,19 @@ const theme = extendTheme({
   components: {
     JoySnackbar: {
       styleOverrides: {
+        // margin for snackbar
         root: {
           '--Snackbar-inset': '1.5rem',
+        },
+      },
+    },
+    JoyLinearProgress: {
+      styleOverrides: {
+        root: {
+          // transition for linear progress
+          ':before': {
+            transition: 'inline-size 0.5s ease-in-out, color 0.5s ease-in-out',
+          },
         },
       },
     },

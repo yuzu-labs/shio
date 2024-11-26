@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BearerToken } from '../../models/auth';
 import { SystemError } from '../../models/global';
+import { SummarizerState } from '../../models/enum/global';
 
 interface GlobalState {
   loading: boolean;
@@ -8,28 +9,24 @@ interface GlobalState {
   errorToastOpen: boolean;
   error?: SystemError;
   token?: BearerToken;
+
+  // summarizer
+  summarizerState: SummarizerState;
 }
 
 const initialState: GlobalState = {
   loading: false,
   isLoggedIn: false,
   errorToastOpen: false,
+
+  summarizerState: SummarizerState.INITIAL,
 };
 
 const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
-    loadSummarize(state, action: PayloadAction<{ videoId: string }>) {
-      state.loading = true;
-    },
-    loadSummarizeSuccess(state) {
-      state.loading = false;
-    },
-    loadSummarizeFail(state, action: PayloadAction<SystemError>) {
-      state.loading = false;
-      state.error = action.payload;
-    },
+    // login
     checkLogin(state) {
       state.loading = true;
     },
@@ -55,6 +52,23 @@ const globalSlice = createSlice({
       state.isLoggedIn = false;
       state.token = undefined;
     },
+
+    // summarizer
+    loadSummarize(state, action: PayloadAction<{ videoId: string }>) {
+      state.loading = true;
+    },
+    loadSummarizeSuccess(state) {
+      state.loading = false;
+    },
+    loadSummarizeFail(state, action: PayloadAction<SystemError>) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    updateSummarizerState(state, action: PayloadAction<SummarizerState>) {
+      state.summarizerState = action.payload;
+    },
+
+    // error
     updateError(state, action: PayloadAction<SystemError>) {
       state.error = action.payload;
     },

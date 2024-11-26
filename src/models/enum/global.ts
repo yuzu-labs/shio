@@ -1,3 +1,11 @@
+export enum SummarizerState {
+  INITIAL,
+  DIALOGUE_LOADING,
+  OVERVIEW_ACTION_ITEM_LOADING,
+  KEYPOINT_LOADING,
+  DONE,
+}
+
 export enum SystemErrorCode {
   // system errors
   BROWSER_NOT_SUPPORTED,
