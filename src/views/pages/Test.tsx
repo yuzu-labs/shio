@@ -32,6 +32,9 @@ const Test = (props: Props) => {
         }}>
         Load Overview
       </button>
+      <button id="toast" onClick={() => dispatch(globalActions.openErrorToast())}>
+        Open Toast
+      </button>
       <pre>{loading.toString()}</pre>
       <pre>{JSON.stringify(token, null, 4)}</pre>
       <pre>{JSON.stringify(transcript, null, 4)}</pre>

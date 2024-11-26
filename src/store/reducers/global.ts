@@ -5,6 +5,7 @@ import { SystemError } from '../../models/global';
 interface GlobalState {
   loading: boolean;
   isLoggedIn: boolean;
+  errorToastOpen: boolean;
   error?: SystemError;
   token?: BearerToken;
 }
@@ -12,6 +13,7 @@ interface GlobalState {
 const initialState: GlobalState = {
   loading: false,
   isLoggedIn: false,
+  errorToastOpen: false,
 };
 
 const globalSlice = createSlice({
@@ -47,6 +49,12 @@ const globalSlice = createSlice({
     logout(state) {
       state.isLoggedIn = false;
       state.token = undefined;
+    },
+    openErrorToast(state) {
+      state.errorToastOpen = true;
+    },
+    closeErrorToast(state) {
+      state.errorToastOpen = false;
     },
   },
 });

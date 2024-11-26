@@ -6,11 +6,12 @@ import { RootState } from '../../store';
 import { NavBar } from '../../components/navigation';
 import { Box } from '@mui/joy';
 import { globalActions } from '../../store/reducers';
+import { ErrorToast } from '../../components/feedback';
 
 type Props = {};
 
 const Default = (props: Props) => {
-  const isLoggedIn = useSelector((state: RootState) => state.global.isLoggedIn);
+  const { isLoggedIn, error, errorToastOpen } = useSelector((state: RootState) => state.global);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,6 +29,9 @@ const Default = (props: Props) => {
           <Route path="/test/mesh" element={<MeshPage />} />
         </Routes>
       </Box>
+      <ErrorToast open={errorToastOpen} onClose={() => dispatch(globalActions.closeErrorToast())}>
+        {error?.content || 'An error occurred'}
+      </ErrorToast>
     </Box>
   );
 };

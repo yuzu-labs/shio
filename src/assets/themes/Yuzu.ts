@@ -31,6 +31,15 @@ const theme = extendTheme({
     // font size of h1
     xl4: '2.5rem',
   },
+  components: {
+    JoySnackbar: {
+      styleOverrides: {
+        root: {
+          '--Snackbar-inset': '1.5rem',
+        },
+      },
+    },
+  },
 });
 
 export default theme;
