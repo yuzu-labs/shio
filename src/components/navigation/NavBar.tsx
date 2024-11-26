@@ -41,7 +41,7 @@ const NavBar = (props: Props) => {
         </Box>
       </Link>
       {/* TEST: navigator between different summarizer states */}
-      <Box sx={{ display: 'none', flexDirection: 'row', gap: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
         <button onClick={() => dispatch(globalActions.updateSummarizerState(SummarizerState.INITIAL))}>Initial</button>
         <button onClick={() => dispatch(globalActions.updateSummarizerState(SummarizerState.DIALOGUE_LOADING))}>
           Loading
