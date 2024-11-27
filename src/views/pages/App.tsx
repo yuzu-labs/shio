@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box } from '@mui/joy';
 import { LandingContainer, LoadingContainer, ReportContainer } from '../../components/summarizer';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import './App.scss';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { SummarizerState } from '../../models/enum/global';
+import styles from './App.module.scss';
+import { YuzuFadeInOut } from '../../components/transition';
 
 function App() {
   const [activeContainer, setActiveContainer] = useState<'landing' | 'loading' | 'report'>('loading');
@@ -44,20 +44,26 @@ function App() {
 
   return (
     <>
-      <TransitionGroup component={null}>
-        <CSSTransition key={activeContainer} timeout={500} classNames="fade" unmountOnExit mountOnEnter>
-          <Box
-            sx={{
-              position: 'absolute', // Absolute positioning
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-            }}>
-            {renderContainer}
-          </Box>
-        </CSSTransition>
-      </TransitionGroup>
+      <div
+        className={styles['mesh-container']}
+        aria-hidden="true"
+        style={{ opacity: activeContainer !== 'loading' ? 0 : 1 }}>
+        <div id={styles['bg-shape1']} className={styles['mesh-shape']}></div>
+        <div id={styles['bg-shape2']} className={styles['mesh-shape']}></div>
+        <div id={styles['bg-shape3']} className={styles['mesh-shape']}></div>
+      </div>
+      <YuzuFadeInOut nodeKey={activeContainer}>
+        <Box
+          sx={{
+            position: 'absolute', // Absolute positioning
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+          }}>
+          {renderContainer}
+        </Box>
+      </YuzuFadeInOut>
     </>
   );
 }

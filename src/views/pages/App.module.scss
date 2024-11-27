@@ -1,0 +1,85 @@
+.mesh-container {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  display: inline-flex;
+  flex-direction: row;
+  transition: opacity 500ms ease-in 500ms;
+}
+
+.mesh-shape {
+  opacity: 0.5;
+  filter: blur(120px);
+}
+
+#bg-shape1 {
+  width: 35vh;
+  height: 35vh;
+  border-radius: 9999px;
+  position: absolute;
+  background-color: rgb(107, 27, 255);
+  animation: one 10s infinite;
+}
+
+#bg-shape2 {
+  width: 300px;
+  height: 300px;
+  border-radius: 9999px;
+  position: absolute;
+  background-color: rgb(45, 86, 249);
+  animation: two 10s infinite;
+}
+
+@keyframes one {
+  0% {
+    left: 12vw;
+    top: 24vh;
+  }
+  20% {
+    left: 40vw;
+    top: 40vh;
+  }
+  40% {
+    left: 65vw;
+    top: 20vh;
+  }
+  60% {
+    left: 45vw;
+    top: 10vh;
+  }
+  80% {
+    left: 30vw;
+    top: 30vh;
+  }
+  100% {
+    left: 12vw;
+    top: 24vh;
+  }
+}
+
+@keyframes two {
+  0% {
+    left: 55vw;
+    top: 48vh;
+  }
+  20% {
+    left: 25vw;
+    top: 35vh;
+  }
+  40% {
+    left: 20vw;
+    top: 45vh;
+  }
+  60% {
+    left: 45vw;
+    top: 40vh;
+  }
+  80% {
+    left: 5vw;
+    top: 5vh;
+  }
+  100% {
+    left: 55vw;
+    top: 48vh;
+  }
+}

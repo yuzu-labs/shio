@@ -1,20 +1,37 @@
 import React from 'react';
-import './Mesh.scss';
+import { Box } from '@mui/joy';
+import styles from './Mesh.module.scss';
 
 type Props = {};
 
 const Mesh = (props: Props) => {
   return (
-    <div className="absolute">
-      <div className="absolute inset-0 justify-center">
-        <div id="bg-shape1" className="opacity-50 bg-blur"></div>
-        <div id="bg-shape2" className="opacity-50 bg-blur"></div>
-        <div id="bg-shape3" className="opacity-50 bg-blur"></div>
+    <>
+      <Box
+        sx={{
+          position: 'absolute', // Absolute positioning
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}>
+          <h1>Mesh Page</h1>
+        </Box>
+      </Box>
+      <div className={styles['mesh-container']}>
+        <div id={styles['bg-shape1']} className={styles['mesh-shape']}></div>
+        <div id={styles['bg-shape2']} className={styles['mesh-shape']}></div>
+        <div id={styles['bg-shape3']} className={styles['mesh-shape']}></div>
       </div>
-      <div className="front">
-        <h1>Hello World.</h1>
-      </div>
-    </div>
+    </>
   );
 };
 

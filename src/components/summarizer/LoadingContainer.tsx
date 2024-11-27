@@ -1,6 +1,6 @@
 import { Box, LinearProgress, Stack, Typography } from '@mui/joy';
 import React, { useEffect, useMemo, useState } from 'react';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { YuzuFadeInOut } from '../transition';
 
 type Props = {};
 
@@ -44,11 +44,9 @@ const LoadingContainer = (props: Props) => {
       }}>
       <Stack gap={2} sx={{ width: '50%', maxWidth: '500px', textAlign: 'center' }}>
         <Box sx={{ position: 'relative', height: '1.5rem' }}>
-          <TransitionGroup component={null}>
-            <CSSTransition key={progress < 100 ? 1 : 2} timeout={500} classNames="fade" unmountOnExit mountOnEnter>
-              <Box sx={{ position: 'absolute', width: '100%' }}>{loadingTextElement}</Box>
-            </CSSTransition>
-          </TransitionGroup>
+          <YuzuFadeInOut nodeKey={progress < 100 ? 1 : 2}>
+            <Box sx={{ position: 'absolute', width: '100%' }}>{loadingTextElement}</Box>
+          </YuzuFadeInOut>
         </Box>
         <LinearProgress size="lg" determinate value={progress} color={progress >= 100 ? 'success' : 'primary'} />
       </Stack>
