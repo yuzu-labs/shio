@@ -1,4 +1,4 @@
-import { call, put, select, take } from 'redux-saga/effects';
+import { all, call, delay, put, select, take } from 'redux-saga/effects';
 import { globalActions, reportActions } from '../reducers';
 import { authAPI } from '../apis';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -10,7 +10,7 @@ import { BearerToken } from '../../models/auth';
 import youtubeAPI from '../apis/youtube';
 import { RootState } from '..';
 import { Transcript } from '../../models/transcript';
-import { SystemErrorCode } from '../../models/enum/global';
+import { SummarizerState, SystemErrorCode } from '../../models/enum/global';
 
 export function* globalCheckLogin() {
   console.log('[saga] global - Check Login');
@@ -140,11 +140,11 @@ export function* globalLogin(action: PayloadAction<{ loginPlainText: string }>) 
   }
 }
 
-export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>) {
+export function* globalLoadSummary(action: PayloadAction<{ videoId: string }>) {
   console.log('[saga] global - Load Summarize');
 
   let systemError: SystemError = {
-    relatedAction: globalActions.loadSummarize.type,
+    relatedAction: globalActions.loadSummary.type,
     title: '',
     content: '',
     code: SystemErrorCode.SYSTEM_OTHER_ERROR,
@@ -160,7 +160,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
         content: 'Youtube video not found',
         code: SystemErrorCode.VIDEO_NOT_FOUND,
       };
-      yield put(globalActions.loadSummarizeFail(systemError));
+      yield put(globalActions.loadSummaryFail(systemError));
       return;
     }
 
@@ -177,7 +177,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
     if (transcriptType === reportActions.loadOverviewFail.type) {
       const error = transcriptPayload as SystemError;
       systemError = { ...systemError, title: error.title, content: error.content, code: error.code };
-      yield put(globalActions.loadSummarizeFail(systemError));
+      yield put(globalActions.loadSummaryFail(systemError));
       return;
     }
 
@@ -190,12 +190,29 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
         content: 'Error occurred while fetching transcript',
         code: SystemErrorCode.DIALOGUE_NOT_FOUND,
       };
-      yield put(globalActions.loadSummarizeFail(systemError));
+      yield put(globalActions.loadSummaryFail(systemError));
       return;
     }
 
-    // fire load overview action
-    yield put(reportActions.loadOverview(transcript));
+    // update summarizer state
+    yield put(globalActions.updateSummarizerState(SummarizerState.DIALOGUE_RECEIVED));
+
+    // load overview while switching to report page after a 1s delay
+    yield all([
+      call(function* () {
+        // fire load overview action
+        yield put(reportActions.loadOverview(transcript));
+      }),
+      call(function* () {
+        // fire load key points action
+        yield put(reportActions.loadKeyPoints(transcript));
+      }),
+      call(function* () {
+        // delay and update summarizer state
+        yield delay(1000);
+        yield put(globalActions.updateSummarizerState(SummarizerState.OVERVIEW_ACTION_ITEM_LOADING));
+      }),
+    ]);
 
     // wait for the overview to be updated
     const { type: overviewType, payload: overviewPayload } = yield take([
@@ -207,7 +224,7 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
     if (overviewType === reportActions.loadOverviewFail.type) {
       const error = overviewPayload as SystemError;
       systemError = { ...systemError, title: error.title, content: error.content, code: error.code };
-      yield put(globalActions.loadSummarizeFail(systemError));
+      yield put(globalActions.loadSummaryFail(systemError));
       return;
     }
 
@@ -220,11 +237,11 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
         content: 'Error occurred while fetching overview',
         code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
       };
-      yield put(globalActions.loadSummarizeFail(systemError));
+      yield put(globalActions.loadSummaryFail(systemError));
       return;
     }
 
-    yield put(globalActions.loadSummarizeSuccess());
+    yield put(globalActions.loadSummarySuccess());
   } catch (e: unknown) {
     if (e instanceof AxiosError) {
       const error = e as AxiosError;
@@ -253,6 +270,6 @@ export function* globalLoadSummarize(action: PayloadAction<{ videoId: string }>)
       };
     }
 
-    yield put(globalActions.loadSummarizeFail(systemError));
+    yield put(globalActions.loadSummaryFail(systemError));
   }
 }

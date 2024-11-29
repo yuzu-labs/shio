@@ -12,12 +12,12 @@ const LandingContainer = (props: Props) => {
   const [urlValid, setUrlValid] = useState(false);
   const [urlErrorMessage, setUrlErrorMessage] = useState('Please enter a URL.');
 
-  const { loading, error } = useSelector((state: RootState) => state.global);
+  const { error } = useSelector((state: RootState) => state.global);
   const { overview } = useSelector((state: RootState) => state.report);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!error || error.relatedAction !== globalActions.loadSummarize.type) return;
+    if (!error || error.relatedAction !== globalActions.loadSummary.type) return;
 
     setUrlValid(false);
     setUrlErrorMessage(error.content);
@@ -51,7 +51,7 @@ const LandingContainer = (props: Props) => {
 
     setUrlValid(true);
 
-    dispatch(globalActions.loadSummarize({ videoId }));
+    dispatch(globalActions.loadSummary({ videoId }));
   };
 
   return (
@@ -76,7 +76,7 @@ const LandingContainer = (props: Props) => {
                 <FormHelperText sx={{ position: 'absolute', top: '36px' }}>{urlErrorMessage}</FormHelperText>
               )}
             </FormControl>
-            <Button loading={loading} variant="soft" type="submit">
+            <Button variant="soft" type="submit">
               Summarize
             </Button>
           </Stack>

@@ -8,7 +8,7 @@ import styles from './App.module.scss';
 import { YuzuFadeInOut } from '../../components/transition';
 
 function App() {
-  const [activeContainer, setActiveContainer] = useState<'landing' | 'loading' | 'report'>('loading');
+  const [activeContainer, setActiveContainer] = useState<'landing' | 'loading' | 'report'>('landing');
   const { summarizerState } = useSelector((state: RootState) => state.global);
 
   useEffect(() => {
@@ -18,6 +18,7 @@ function App() {
         break;
 
       case SummarizerState.DIALOGUE_LOADING:
+      case SummarizerState.DIALOGUE_RECEIVED:
         setActiveContainer('loading');
         break;
 

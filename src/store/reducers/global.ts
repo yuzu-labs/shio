@@ -54,15 +54,18 @@ const globalSlice = createSlice({
     },
 
     // summarizer
-    loadSummarize(state, action: PayloadAction<{ videoId: string }>) {
+    loadSummary(state, action: PayloadAction<{ videoId: string }>) {
       state.loading = true;
+      state.summarizerState = SummarizerState.DIALOGUE_LOADING;
     },
-    loadSummarizeSuccess(state) {
+    loadSummarySuccess(state) {
       state.loading = false;
+      state.summarizerState = SummarizerState.DONE;
     },
-    loadSummarizeFail(state, action: PayloadAction<SystemError>) {
+    loadSummaryFail(state, action: PayloadAction<SystemError>) {
       state.loading = false;
       state.error = action.payload;
+      state.summarizerState = SummarizerState.INITIAL;
     },
     updateSummarizerState(state, action: PayloadAction<SummarizerState>) {
       state.summarizerState = action.payload;

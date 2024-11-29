@@ -1,25 +1,40 @@
 import { Box, LinearProgress, Stack, Typography } from '@mui/joy';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { YuzuFadeInOut } from '../transition';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { SummarizerState } from '../../models/enum/global';
 
 type Props = {};
 
 const LoadingContainer = (props: Props) => {
-  const [progress, setProgress] = useState(20);
+  const [progress, setProgress] = useState(10);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { summarizerState } = useSelector((state: RootState) => state.global);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setProgress((prev) => {
-        const newProgress = prev + 60;
-        if (newProgress > 100) {
-          clearInterval(interval);
-          return 100;
+        const newProgress = prev + 15;
+        if (newProgress > 90) {
+          clearInterval(intervalRef.current!);
+          return 90;
         }
         return newProgress;
       });
     }, 1000);
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalRef.current!);
   }, []);
+
+  useEffect(() => {
+    if (summarizerState === SummarizerState.DIALOGUE_RECEIVED) {
+      setProgress(100);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    }
+  }, [summarizerState]);
 
   const loadingTextElement = useMemo(() => {
     if (progress < 100) {

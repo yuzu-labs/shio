@@ -50,6 +50,16 @@ const theme = extendTheme({
         },
       },
     },
+    JoyAspectRatio: {
+      styleOverrides: {
+        root: {
+          // make aspect ratio component transparent
+          '&& > div': {
+            'background-color': 'transparent',
+          },
+        },
+      },
+    },
   },
 });
 
