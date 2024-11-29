@@ -1,97 +1,72 @@
-import { Box, Button, FormControl, FormHelperText, Input, Stack, Typography } from '@mui/joy';
-import React, { useEffect, useState } from 'react';
-import { getYoutubeVideoId, isValidYoutubeVideoID } from '../../utils';
-import { globalActions } from '../../store/reducers';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box } from '@mui/joy';
+import { LandingContainer, LoadingContainer, ReportContainer } from '../../components/summarizer';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { SummarizerState } from '../../models/enum/global';
+import styles from './App.module.scss';
+import { YuzuFadeInOut } from '../../components/transition';
 
 function App() {
-  const [validated, setValidated] = useState(false);
-  const [urlValid, setUrlValid] = useState(false);
-  const [urlErrorMessage, setUrlErrorMessage] = useState('Please enter a URL.');
-
-  const { loading, error } = useSelector((state: RootState) => state.global);
-  const { overview } = useSelector((state: RootState) => state.report);
-  const dispatch = useDispatch();
+  const [activeContainer, setActiveContainer] = useState<'landing' | 'loading' | 'report'>('landing');
+  const { summarizerState } = useSelector((state: RootState) => state.global);
 
   useEffect(() => {
-    if (!error || error.relatedAction !== globalActions.loadSummarize.type) return;
+    switch (summarizerState) {
+      case SummarizerState.INITIAL:
+        setActiveContainer('landing');
+        break;
 
-    setUrlValid(false);
-    setUrlErrorMessage(error.content);
-  }, [error]);
+      case SummarizerState.DIALOGUE_LOADING:
+      case SummarizerState.DIALOGUE_RECEIVED:
+        setActiveContainer('loading');
+        break;
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    const form = event.currentTarget;
-
-    // prevent default form submit effect
-    event.preventDefault();
-    event.stopPropagation();
-
-    setValidated(true);
-
-    const fd = new FormData(form);
-    const yUrl = fd.get('youtube-url');
-
-    setUrlValid(false);
-
-    if (!yUrl) {
-      setUrlErrorMessage('Please enter a URL.');
-      return;
+      case SummarizerState.OVERVIEW_LOADING:
+      case SummarizerState.KEYPOINT_LOADING:
+      case SummarizerState.ACTION_ITEMS_LOADING:
+      case SummarizerState.DONE:
+        setActiveContainer('report');
+        break;
     }
+  }, [summarizerState]);
 
-    const videoId = getYoutubeVideoId(yUrl.toString());
-
-    if (!videoId || !isValidYoutubeVideoID(videoId)) {
-      setUrlErrorMessage('Please enter a valid YouTube URL.');
-      return;
+  const renderContainer = useMemo(() => {
+    switch (activeContainer) {
+      case 'landing':
+        return <LandingContainer key="landing" />;
+      case 'loading':
+        return <LoadingContainer key="loading" />;
+      case 'report':
+        return <ReportContainer key="report" />;
+      default:
+        return null;
     }
-
-    setUrlValid(true);
-
-    dispatch(globalActions.loadSummarize({ videoId }));
-  };
+  }, [activeContainer]);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        height: '100%',
-        pt: '32vh',
-      }}>
-      <Stack gap={7} sx={{ width: '50%', maxWidth: '768px' }}>
-        <Stack spacing={4} sx={{ textAlign: 'center' }}>
-          <Typography level="h1">YouTube Video Summarizer</Typography>
-          <Typography level="body-md">
-            Get YouTube transcript and use AI to summarize YouTube videos in one click for free.
-          </Typography>
-        </Stack>
-        <form onSubmit={handleSubmit}>
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
-            <FormControl error={validated && !urlValid} sx={{ flexGrow: 1 }}>
-              <Input
-                name="youtube-url"
-                placeholder="Enter a YouTube video URL and press “Summarize”"
-                variant="outlined"
-                type="url"
-              />
-              {validated && !urlValid && (
-                <FormHelperText sx={{ position: 'absolute', top: '36px' }}>{urlErrorMessage}</FormHelperText>
-              )}
-            </FormControl>
-            <Button loading={loading} variant="soft" type="submit">
-              Summarize
-            </Button>
-          </Stack>
-        </form>
-        {/* TODO: remove test text area */}
-        <Typography level="body-sm" sx={{ textAlign: 'center' }}>
-          {overview}
-        </Typography>
-      </Stack>
-    </Box>
+    <>
+      <div
+        className={styles['mesh-container']}
+        aria-hidden="true"
+        style={{ opacity: activeContainer !== 'loading' ? 0 : 1 }}>
+        <div id={styles['bg-shape1']} className={styles['mesh-shape']}></div>
+        <div id={styles['bg-shape2']} className={styles['mesh-shape']}></div>
+        <div id={styles['bg-shape3']} className={styles['mesh-shape']}></div>
+      </div>
+      <YuzuFadeInOut nodeKey={activeContainer}>
+        <Box
+          sx={{
+            position: 'absolute', // Absolute positioning
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+          }}>
+          {renderContainer}
+        </Box>
+      </YuzuFadeInOut>
+    </>
   );
 }
 

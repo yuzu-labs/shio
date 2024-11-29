@@ -31,6 +31,36 @@ const theme = extendTheme({
     // font size of h1
     xl4: '2.5rem',
   },
+  components: {
+    JoySnackbar: {
+      styleOverrides: {
+        // margin for snackbar
+        root: {
+          '--Snackbar-inset': '1.5rem',
+        },
+      },
+    },
+    JoyLinearProgress: {
+      styleOverrides: {
+        root: {
+          // transition for linear progress
+          ':before': {
+            transition: 'inline-size 0.5s ease-in-out, color 0.5s ease-in-out',
+          },
+        },
+      },
+    },
+    JoyAspectRatio: {
+      styleOverrides: {
+        root: {
+          // make aspect ratio component transparent
+          '&& > div': {
+            'background-color': 'transparent',
+          },
+        },
+      },
+    },
+  },
 });
 
 export default theme;

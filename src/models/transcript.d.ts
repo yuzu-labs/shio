@@ -1,6 +1,7 @@
 export type Transcript = {
   videoId: string;
   textSections: TextSection[];
+  rawText: string;
 };
 
 export type TextSection = {

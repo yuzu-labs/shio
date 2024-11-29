@@ -21,16 +21,19 @@ const Test = (props: Props) => {
           const text = textAreaRef.current?.value;
           if (!text) return;
           console.log('Summarize:', text);
-          dispatch(globalActions.loadSummarize({ videoId: text }));
+          dispatch(globalActions.loadSummary({ videoId: text }));
         }}>
         Summarize
       </button>
       <button
         id="overview"
         onClick={() => {
-          dispatch(reportActions.loadOverview(transcript ?? { videoId: '', textSections: [] }));
+          dispatch(reportActions.loadOverview(transcript ?? { videoId: '', textSections: [], rawText: '' }));
         }}>
         Load Overview
+      </button>
+      <button id="toast" onClick={() => dispatch(globalActions.openErrorToast())}>
+        Open Toast
       </button>
       <pre>{loading.toString()}</pre>
       <pre>{JSON.stringify(token, null, 4)}</pre>

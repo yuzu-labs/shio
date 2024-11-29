@@ -1,0 +1,17 @@
+/* Fade Enter */
+.yuzu-fade-enter {
+  opacity: 0;
+}
+.yuzu-fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in 500ms;
+}
+
+/* Fade Exit */
+.yuzu-fade-exit {
+  opacity: 1;
+}
+.yuzu-fade-exit-active {
+  opacity: 0;
+  transition: opacity 500ms ease-out;
+}
