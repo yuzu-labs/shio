@@ -208,9 +208,13 @@ export function* globalLoadSummary(action: PayloadAction<{ videoId: string }>) {
         yield put(reportActions.loadKeyPoints(transcript));
       }),
       call(function* () {
+        // fire load action items action
+        yield put(reportActions.loadActionItems(transcript));
+      }),
+      call(function* () {
         // delay and update summarizer state
         yield delay(1000);
-        yield put(globalActions.updateSummarizerState(SummarizerState.OVERVIEW_ACTION_ITEM_LOADING));
+        yield put(globalActions.updateSummarizerState(SummarizerState.OVERVIEW_LOADING));
       }),
     ]);
 
@@ -240,6 +244,66 @@ export function* globalLoadSummary(action: PayloadAction<{ videoId: string }>) {
       yield put(globalActions.loadSummaryFail(systemError));
       return;
     }
+
+    yield put(globalActions.updateSummarizerState(SummarizerState.KEYPOINT_LOADING));
+
+    // wait for the key points to be updated
+    const { type: keyPointsType, payload: keyPointsPayload } = yield take([
+      reportActions.updateKeyPoints.type,
+      reportActions.loadKeyPointsFail.type,
+    ]);
+
+    // handle exception
+    if (keyPointsType === reportActions.loadKeyPointsFail.type) {
+      const error = keyPointsPayload as SystemError;
+      systemError = { ...systemError, title: error.title, content: error.content, code: error.code };
+      yield put(globalActions.loadSummaryFail(systemError));
+      return;
+    }
+
+    const keyPoints: string[] | undefined = yield select((state: RootState) => state.report.keyPoints);
+
+    if (!keyPoints) {
+      systemError = {
+        ...systemError,
+        title: 'Key Points Not Found',
+        content: 'Error occurred while fetching key points',
+        code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
+      };
+      yield put(globalActions.loadSummaryFail(systemError));
+      return;
+    }
+
+    yield put(globalActions.updateSummarizerState(SummarizerState.ACTION_ITEMS_LOADING));
+
+    // wait for the action items to be updated
+    const { type: actionItemsType, payload: actionItemsPayload } = yield take([
+      reportActions.updateActionItems.type,
+      reportActions.loadActionItemsFail.type,
+    ]);
+
+    // handle exception
+    if (actionItemsType === reportActions.loadActionItemsFail.type) {
+      const error = actionItemsPayload as SystemError;
+      systemError = { ...systemError, title: error.title, content: error.content, code: error.code };
+      yield put(globalActions.loadSummaryFail(systemError));
+      return;
+    }
+
+    const actionItems: string[] | undefined = yield select((state: RootState) => state.report.actionItems);
+
+    if (!actionItems) {
+      systemError = {
+        ...systemError,
+        title: 'Action Items Not Found',
+        content: 'Error occurred while fetching action items',
+        code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
+      };
+      yield put(globalActions.loadSummaryFail(systemError));
+      return;
+    }
+
+    yield put(globalActions.updateSummarizerState(SummarizerState.DONE));
 
     yield put(globalActions.loadSummarySuccess());
   } catch (e: unknown) {

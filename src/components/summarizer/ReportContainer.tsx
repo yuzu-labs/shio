@@ -16,11 +16,11 @@ const ReportContainer = (props: Props) => {
   const [actionItemCopied, setActionItemCopied] = useState(false);
 
   // const { summarizerState } = useSelector((state: RootState) => state.global);
-  const { overview, keyPoints } = useSelector((state: RootState) => state.report);
+  const { overview, keyPoints, actionItems } = useSelector((state: RootState) => state.report);
 
   const overviewLoading = overview === undefined;
   const keypointLoading = keyPoints === undefined;
-  const actionItemLoading = true; // TODO: replace with real state
+  const actionItemLoading = actionItems === undefined;
 
   const handleCopy = (paragraph: 'overview' | 'keypoint' | 'actionItem') => {
     switch (paragraph) {
@@ -142,14 +142,39 @@ const ReportContainer = (props: Props) => {
           </Box>
         </Stack>
         <Stack gap={2}>
-          <Typography level="h4">Action Items</Typography>
-          <List marker="disc">
-            <ListItem>Choose and open a reliable brokerage account.</ListItem>
-            <ListItem>Research stocks of interest.</ListItem>
-            <ListItem>Decide on an investment budget.</ListItem>
-            <ListItem>Determine your investment strategy (short or long term).</ListItem>
-          </List>
-          <Box>
+          <Typography level="h4">
+            <Skeleton animation={SKELETON_ANIMATION} loading={actionItemLoading}>
+              Action Items
+            </Skeleton>
+          </Typography>
+          {actionItemLoading && (
+            <Stack gap={1}>
+              {[...Array(3)].map((_, index) => (
+                <Box key={index} sx={{ paddingInlineStart: '3ch' }}>
+                  <Stack
+                    spacing={1}
+                    sx={{
+                      paddingInlineStart: '.25rem',
+                      paddingInlineEnd: '.25rem',
+                      paddingBlockStart: '.25rem',
+                      paddingBlockEnd: '.25rem',
+                    }}>
+                    <Skeleton animation={SKELETON_ANIMATION} variant="text" width={1} />
+                    <Skeleton animation={SKELETON_ANIMATION} variant="text" width={1} />
+                    <Skeleton animation={SKELETON_ANIMATION} variant="text" width={0.65} />
+                  </Stack>
+                </Box>
+              ))}
+            </Stack>
+          )}
+          {!actionItemLoading && (
+            <List marker="disc">
+              {actionItems.map((item, idx) => (
+                <ListItem key={idx}>{item}</ListItem>
+              ))}
+            </List>
+          )}
+          <Box sx={{ display: actionItemLoading ? 'none' : undefined }}>
             <Tooltip title="Copy" placement="right" arrow>
               <IconButton
                 color={actionItemCopied ? 'success' : 'neutral'}

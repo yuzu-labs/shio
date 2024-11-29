@@ -22,8 +22,9 @@ function App() {
         setActiveContainer('loading');
         break;
 
-      case SummarizerState.OVERVIEW_ACTION_ITEM_LOADING:
+      case SummarizerState.OVERVIEW_LOADING:
       case SummarizerState.KEYPOINT_LOADING:
+      case SummarizerState.ACTION_ITEMS_LOADING:
       case SummarizerState.DONE:
         setActiveContainer('report');
         break;

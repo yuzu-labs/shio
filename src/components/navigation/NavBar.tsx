@@ -1,18 +1,13 @@
 import { AspectRatio, Box, Typography } from '@mui/joy';
 import { SxProps } from '@mui/joy/styles/types';
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { globalActions } from '../../store/reducers';
-import { SummarizerState } from '../../models/enum/global';
 
 type Props = {
   sx?: SxProps;
 };
 
 const NavBar = (props: Props) => {
-  const dispatch = useDispatch();
-
   return (
     <Box
       sx={{
@@ -53,17 +48,6 @@ const NavBar = (props: Props) => {
           </Typography>
         </Box>
       </Link>
-      {/* TEST: navigator between different summarizer states */}
-      <Box sx={{ display: 'none', flexDirection: 'row', gap: 2 }}>
-        <button onClick={() => dispatch(globalActions.updateSummarizerState(SummarizerState.INITIAL))}>Initial</button>
-        <button onClick={() => dispatch(globalActions.updateSummarizerState(SummarizerState.DIALOGUE_LOADING))}>
-          Loading
-        </button>
-        <button
-          onClick={() => dispatch(globalActions.updateSummarizerState(SummarizerState.OVERVIEW_ACTION_ITEM_LOADING))}>
-          Report
-        </button>
-      </Box>
     </Box>
   );
 };

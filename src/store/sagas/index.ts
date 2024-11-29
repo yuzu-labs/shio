@@ -1,7 +1,7 @@
 import { all, takeEvery } from 'redux-saga/effects';
 import { globalCheckLogin, globalLoadSummary, globalLogin } from './global';
 import { globalActions, reportActions } from '../reducers';
-import { reportLoadKeyPoints, reportLoadOverview, reportLoadTranscript } from './report';
+import { reportLoadActionItems, reportLoadKeyPoints, reportLoadOverview, reportLoadTranscript } from './report';
 
 export default function* rootSaga() {
   yield all([
@@ -14,5 +14,6 @@ export default function* rootSaga() {
     takeEvery(reportActions.loadTranscript.type, reportLoadTranscript),
     takeEvery(reportActions.loadOverview.type, reportLoadOverview),
     takeEvery(reportActions.loadKeyPoints.type, reportLoadKeyPoints),
+    takeEvery(reportActions.loadActionItems.type, reportLoadActionItems),
   ]);
 }
