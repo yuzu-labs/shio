@@ -81,6 +81,11 @@ const globalSlice = createSlice({
     closeErrorToast(state) {
       state.errorToastOpen = false;
     },
+
+    // clear up
+    clearSummarizer(state) {
+      state.summarizerState = SummarizerState.INITIAL;
+    },
   },
 });
 

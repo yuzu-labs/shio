@@ -1,10 +1,11 @@
 import { Box, Button, IconButton, List, ListItem, Skeleton, Stack, Tooltip, Typography } from '@mui/joy';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 // import { SummarizerState } from '../../models/enum/global';
 import { YoutubeEmbed } from './report';
 import { Check, ContentCopy, OpenInNew } from '@mui/icons-material';
+import { globalActions } from '../../store/reducers';
 
 type Props = {};
 
@@ -15,8 +16,9 @@ const ReportContainer = (props: Props) => {
   const [keypointCopied, setKeypointCopied] = useState(false);
   const [actionItemCopied, setActionItemCopied] = useState(false);
 
-  // const { summarizerState } = useSelector((state: RootState) => state.global);
-  const { overview, keyPoints, actionItems } = useSelector((state: RootState) => state.report);
+  const { transcript, overview, keyPoints, actionItems } = useSelector((state: RootState) => state.report);
+
+  const dispatch = useDispatch();
 
   const overviewLoading = overview === undefined;
   const keypointLoading = keyPoints === undefined;
@@ -65,8 +67,8 @@ const ReportContainer = (props: Props) => {
         paddingBottom: '32vh',
       }}>
       <Stack gap={7} sx={{ width: '50%', maxWidth: '768px' }}>
-        <YoutubeEmbed />
-        <Stack gap={2}>
+        <YoutubeEmbed id="shio-report__video" vid={transcript?.videoId ?? 'jDkdZd4f4S4'} />
+        <Stack id="shio-report__overview" gap={2}>
           <Typography level="h4">
             <Skeleton animation={SKELETON_ANIMATION} loading={overviewLoading}>
               Overview
@@ -96,10 +98,10 @@ const ReportContainer = (props: Props) => {
             </Tooltip>
           </Box>
         </Stack>
-        <Stack gap={2}>
+        <Stack id="shio-report__key-points" gap={2}>
           <Typography level="h4">
             <Skeleton animation={SKELETON_ANIMATION} loading={keypointLoading}>
-              Keypoint
+              Key Points
             </Skeleton>
           </Typography>
           <Stack direction={'row'}></Stack>
@@ -141,7 +143,7 @@ const ReportContainer = (props: Props) => {
             </Tooltip>
           </Box>
         </Stack>
-        <Stack gap={2}>
+        <Stack id="shio-report__action-items" gap={2}>
           <Typography level="h4">
             <Skeleton animation={SKELETON_ANIMATION} loading={actionItemLoading}>
               Action Items
@@ -185,7 +187,15 @@ const ReportContainer = (props: Props) => {
             </Tooltip>
           </Box>
         </Stack>
-        <Box sx={{ bgcolor: 'neutral.100', borderRadius: 'var(--joy-radius-md)', padding: 2, margin: -2 }}>
+        <Box
+          id="shio-report__related-topics"
+          sx={{
+            display: 'none', // TODO: implement this section and remove this line
+            bgcolor: 'neutral.100',
+            borderRadius: 'var(--joy-radius-md)',
+            padding: 2,
+            margin: -2,
+          }}>
           <Stack gap={2}>
             <Typography level="title-sm">Related Topics</Typography>
             <Stack gap={2} sx={{ alignItems: 'flex-start' }}>
@@ -210,8 +220,14 @@ const ReportContainer = (props: Props) => {
             </Stack>
           </Stack>
         </Box>
-        <Stack sx={{ alignItems: 'center' }}>
-          <Button variant="soft">New Summary</Button>
+        <Stack id="shio-report__button-container" sx={{ alignItems: 'center' }}>
+          <Button
+            variant="soft"
+            onClick={() => {
+              dispatch(globalActions.clearSummarizer());
+            }}>
+            New Summary
+          </Button>
         </Stack>
       </Stack>
     </Box>

@@ -2,13 +2,16 @@ import React from 'react';
 import YouTube from 'react-youtube';
 import './YoutubeEmbed.scss';
 
-type Props = {};
+type Props = React.ComponentProps<'div'> & {
+  vid: string;
+};
 
 const YoutubeEmbed = (props: Props) => {
   return (
     <YouTube
-      className="youtube-container"
-      videoId="jDkdZd4f4S4"
+      id={props.id}
+      className="shio-youtube__container"
+      videoId={props.vid}
       onReady={(e) => {
         console.log('ready');
       }}

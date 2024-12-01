@@ -48,6 +48,14 @@ const ReportSlice = createSlice({
     },
 
     // TODO: related topics
+
+    // clear up
+    clearReport(state) {
+      state.transcript = undefined;
+      state.overview = undefined;
+      state.keyPoints = undefined;
+      state.actionItems = undefined;
+    },
   },
 });
 
