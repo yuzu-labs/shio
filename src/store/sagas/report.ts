@@ -180,7 +180,7 @@ export function* reportLoadActionItems(action: PayloadAction<Transcript>) {
 
   "{TRANSCRIPT}"
 
-  I want to explore more on the topics mentioned in the video, please list out possible options for this context, at most 8 actions. Please return the list with '-' as the marker without any other content
+  I want to explore more on the topics mentioned in the video, please list out at most 8 possible options for this context. Please return the list with '*' as the marker without any other content
   `;
 
   let systemError: SystemError = {
@@ -211,7 +211,8 @@ export function* reportLoadActionItems(action: PayloadAction<Transcript>) {
     );
     const actionItems = rawActionItems
       .trim()
-      .split('- ')
+      .split('*')
+      .map((item) => item.trim())
       .filter((item) => item);
 
     console.log('Action Items:', actionItems);

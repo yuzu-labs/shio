@@ -1,5 +1,5 @@
 import { all, takeEvery } from 'redux-saga/effects';
-import { globalCheckLogin, globalLoadSummary, globalLogin } from './global';
+import { globalCheckLogin, globalClearSummarizer, globalLoadSummary, globalLogin } from './global';
 import { globalActions, reportActions } from '../reducers';
 import { reportLoadActionItems, reportLoadKeyPoints, reportLoadOverview, reportLoadTranscript } from './report';
 
@@ -9,6 +9,7 @@ export default function* rootSaga() {
     takeEvery(globalActions.checkLogin.type, globalCheckLogin),
     takeEvery(globalActions.login.type, globalLogin),
     takeEvery(globalActions.loadSummary.type, globalLoadSummary),
+    takeEvery(globalActions.clearSummarizer.type, globalClearSummarizer),
 
     // report
     takeEvery(reportActions.loadTranscript.type, reportLoadTranscript),

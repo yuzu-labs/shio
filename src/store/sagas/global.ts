@@ -337,3 +337,11 @@ export function* globalLoadSummary(action: PayloadAction<{ videoId: string }>) {
     yield put(globalActions.loadSummaryFail(systemError));
   }
 }
+
+export function* globalClearSummarizer() {
+  console.log('[saga] global - Clear Summarizer');
+
+  // wait for 1s before clearing the report
+  yield delay(1000);
+  yield put(reportActions.clearReport());
+}
