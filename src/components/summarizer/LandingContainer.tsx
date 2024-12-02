@@ -4,6 +4,7 @@ import { RootState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { globalActions } from '../../store/reducers';
 import { getYoutubeVideoId, isValidYoutubeVideoID } from '../../utils';
+import { VERSION } from '../../utils/config';
 
 type Props = {};
 
@@ -80,6 +81,9 @@ const LandingContainer = (props: Props) => {
             </Button>
           </Stack>
         </form>
+        <Typography level="body-sm" sx={{ textAlign: 'center' }}>
+          Version: {VERSION}
+        </Typography>
       </Stack>
     </Box>
   );
