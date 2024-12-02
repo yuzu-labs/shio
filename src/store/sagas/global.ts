@@ -74,8 +74,6 @@ export function* globalCheckAICompatibility() {
       case ChromeAI.AICapability.DOWNLOAD:
         throw Error('AI_DOWNLOAD_REQUIRED');
     }
-
-    console.log(ChromeAI.AICapability[compatibility]);
   } catch (e: unknown) {
     let systemError: SystemError = {
       relatedAction: globalActions.checkAICompatibility.type,

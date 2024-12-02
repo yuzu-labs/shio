@@ -61,7 +61,7 @@ export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
       return;
     }
 
-    console.log(`Total characters in transcript: ${transcript.rawText.length}`);
+    // console.log(`Total characters in transcript: ${transcript.rawText.length}`);
 
     if (transcript.rawText.length > 4000) {
       systemError = {
@@ -113,7 +113,7 @@ export function* reportLoadOverview(action: PayloadAction<Transcript>) {
     const AIClient: ChromeAI.Client = yield call(ChromeAI.Client.getInstance);
     const overview: string = yield call([AIClient, AIClient.summarize], text, 'headline', 'plain-text', 'medium');
 
-    console.log('Overview:', overview);
+    // console.log('Overview:', overview);
 
     yield put(reportActions.updateOverview(overview));
   } catch (e: unknown) {
@@ -158,7 +158,7 @@ export function* reportLoadKeyPoints(action: PayloadAction<Transcript>) {
       .split('- ')
       .filter((point) => point);
 
-    console.log('Key Points:', keyPoints);
+    // console.log('Key Points:', keyPoints);
 
     yield put(reportActions.updateKeyPoints(keyPoints));
   } catch (e: unknown) {
@@ -215,7 +215,7 @@ export function* reportLoadActionItems(action: PayloadAction<Transcript>) {
       .map((item) => item.trim())
       .filter((item) => item);
 
-    console.log('Action Items:', actionItems);
+    // console.log('Action Items:', actionItems);
 
     yield put(reportActions.updateActionItems(actionItems));
   } catch (e: unknown) {
