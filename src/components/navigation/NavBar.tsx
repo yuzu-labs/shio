@@ -1,13 +1,20 @@
 import { AspectRatio, Box, Typography } from '@mui/joy';
 import { SxProps } from '@mui/joy/styles/types';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { RootState } from '../../store';
+import { SummarizerState } from '../../models/enum/global';
+import { globalActions } from '../../store/reducers';
 
 type Props = {
   sx?: SxProps;
 };
 
 const NavBar = (props: Props) => {
+  const { summarizerState } = useSelector((state: RootState) => state.global);
+  const dispatch = useDispatch();
+
   return (
     <Box
       sx={{
@@ -19,7 +26,14 @@ const NavBar = (props: Props) => {
         width: '100%',
         p: 3,
       }}>
-      <Link to="/" style={{ textDecoration: 'none' }}>
+      <Link
+        to="/"
+        style={{ textDecoration: 'none' }}
+        onClick={() => {
+          if (summarizerState !== SummarizerState.INITIAL) {
+            dispatch(globalActions.clearSummarizer());
+          }
+        }}>
         <Box
           sx={{
             display: 'flex',

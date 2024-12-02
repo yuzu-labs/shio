@@ -68,7 +68,7 @@ export function* reportLoadTranscript(action: PayloadAction<VideoMetadata>) {
         ...systemError,
         title: 'Text Too Long',
         content: 'Text is too long (over 4000 characters) to summarize',
-        code: SystemErrorCode.SUMMARIZES_OTHER_ERROR,
+        code: SystemErrorCode.VIDEO_TOO_LONG,
       };
       yield put(reportActions.loadTranscriptFail(systemError));
       return;

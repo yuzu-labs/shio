@@ -203,7 +203,7 @@ export function* globalLoadSummary(action: PayloadAction<{ videoId: string }>) {
     ]);
 
     // handle exception
-    if (transcriptType === reportActions.loadOverviewFail.type) {
+    if (transcriptType === reportActions.loadTranscriptFail.type) {
       const error = transcriptPayload as SystemError;
       systemError = { ...systemError, title: error.title, content: error.content, code: error.code };
       yield put(globalActions.loadSummaryFail(systemError));
@@ -369,6 +369,18 @@ export function* globalLoadSummary(action: PayloadAction<{ videoId: string }>) {
 
 export function* globalClearSummarizer() {
   console.log('[saga] global - Clear Summarizer');
+
+  // wait for 1s before clearing the report
+  yield delay(1000);
+  yield put(reportActions.clearReport());
+}
+
+export function* globalLoadSummaryFail(action: PayloadAction<SystemError>) {
+  console.log('[saga] global - Load Summary Fail');
+
+  if (action.payload.code === SystemErrorCode.SUMMARIZES_OTHER_ERROR) {
+    yield put(globalActions.openErrorToast());
+  }
 
   // wait for 1s before clearing the report
   yield delay(1000);
