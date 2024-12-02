@@ -11,6 +11,7 @@ import youtubeAPI from '../apis/youtube';
 import { RootState } from '..';
 import { Transcript } from '../../models/transcript';
 import { SummarizerState, SystemErrorCode } from '../../models/enum/global';
+import { ChromeAI } from '../../utils/ai';
 
 export function* globalCheckLogin() {
   console.log('[saga] global - Check Login');
@@ -53,6 +54,42 @@ export function* globalCheckLogin() {
     }
 
     yield put(globalActions.checkLoginFail());
+  }
+}
+
+export function* globalCheckAICompatibility() {
+  console.log('[saga] global - Check AI Compatibility');
+
+  try {
+    yield delay(10);
+
+    const AIClient: ChromeAI.Client = yield call(ChromeAI.Client.getInstance);
+    const compatibility: ChromeAI.AICapability = yield call([AIClient, AIClient.getCapabilities]);
+
+    switch (compatibility) {
+      case ChromeAI.AICapability.UNSUPPORTED:
+        throw Error('AI_UNSUPPORTED');
+      case ChromeAI.AICapability.NONE:
+        throw Error('AI_MODEL_UNAVAILABLE');
+      case ChromeAI.AICapability.DOWNLOAD:
+        throw Error('AI_DOWNLOAD_REQUIRED');
+    }
+
+    console.log(ChromeAI.AICapability[compatibility]);
+  } catch (e: unknown) {
+    let systemError: SystemError = {
+      relatedAction: globalActions.checkAICompatibility.type,
+      title: 'NOT SUPPORTED',
+      content: '',
+      code: SystemErrorCode.BROWSER_NOT_SUPPORTED,
+    };
+
+    if (e instanceof Error) {
+      const error = e as Error;
+      systemError = { ...systemError, content: error.message };
+    }
+
+    yield put(globalActions.updateError(systemError));
   }
 }
 

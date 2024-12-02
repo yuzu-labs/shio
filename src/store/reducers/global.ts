@@ -46,6 +46,7 @@ const globalSlice = createSlice({
       state.isLoggedIn = false;
       state.token = undefined;
     },
+    checkAICompatibility(state) {},
     login(state, action: PayloadAction<{ loginPlainText: string }>) {
       state.loading = true;
     },
