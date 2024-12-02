@@ -117,6 +117,8 @@ function App() {
         open={modalOpen}
         title={modalTitle}
         content={modalContent}
+        color={modalState === SystemErrorCode.ALERT ? 'danger' : undefined}
+        cancellable={modalState === SystemErrorCode.ALERT}
         confirmText={modalConfirmAction}
         onConfirmAction={handleModalConfirm}
       />
