@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Shio AI",
+  "name": "Shio AI by Yuzu Labs",
+  "description": "Local-first Youtube Video Summarizer with Gemini Nano",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#602DF8",
   "background_color": "#ffffff"
 }
