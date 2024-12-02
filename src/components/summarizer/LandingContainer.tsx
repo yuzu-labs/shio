@@ -4,6 +4,7 @@ import { RootState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { globalActions } from '../../store/reducers';
 import { getYoutubeVideoId, isValidYoutubeVideoID } from '../../utils';
+import { VERSION } from '../../utils/config';
 
 type Props = {};
 
@@ -13,7 +14,6 @@ const LandingContainer = (props: Props) => {
   const [urlErrorMessage, setUrlErrorMessage] = useState('Please enter a URL.');
 
   const { error } = useSelector((state: RootState) => state.global);
-  const { overview } = useSelector((state: RootState) => state.report);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -81,9 +81,8 @@ const LandingContainer = (props: Props) => {
             </Button>
           </Stack>
         </form>
-        {/* TODO: remove test text area */}
         <Typography level="body-sm" sx={{ textAlign: 'center' }}>
-          {overview}
+          Version: {VERSION}
         </Typography>
       </Stack>
     </Box>

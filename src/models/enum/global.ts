@@ -27,4 +27,7 @@ export enum SystemErrorCode {
   LANGUAGE_NOT_SUPPORTED,
   TRANSCRIPTION_ERROR,
   SUMMARIZES_OTHER_ERROR, // anything happened in summarizer including unknown AI error
+
+  // alert
+  ALERT,
 }

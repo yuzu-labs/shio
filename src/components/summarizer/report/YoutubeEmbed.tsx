@@ -7,16 +7,7 @@ type Props = React.ComponentProps<'div'> & {
 };
 
 const YoutubeEmbed = (props: Props) => {
-  return (
-    <YouTube
-      id={props.id}
-      className="shio-youtube__container"
-      videoId={props.vid}
-      onReady={(e) => {
-        console.log('ready');
-      }}
-    />
-  );
+  return <YouTube id={props.id} className="shio-youtube__container" videoId={props.vid} />;
 };
 
 export default YoutubeEmbed;
