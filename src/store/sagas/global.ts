@@ -3,7 +3,7 @@ import { globalActions, reportActions } from '../reducers';
 import { authAPI } from '../apis';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { AESClient, RSAEncryptionClient } from '../../utils/crypto';
-import { AuthAPIResponse, YoutubeAPIResponse } from '../../models/api';
+import { AuthAPIResponse, BaseAPIResponse, YoutubeAPIResponse } from '../../models/api';
 import { AxiosError } from 'axios';
 import { SystemError } from '../../models/global';
 import { BearerToken } from '../../models/auth';
@@ -19,9 +19,12 @@ export function* globalCheckLogin() {
     const encryptedToken: string | null = localStorage.getItem('token');
 
     if (!encryptedToken) {
-      yield put(globalActions.logout());
+      yield put(globalActions.checkLoginFail());
       return;
     }
+
+    // delay for 10ms to wait for second render to actually loadd the AES key
+    yield delay(10);
 
     const aesClient: AESClient = yield call(AESClient.getInstance);
     const decryptedToken: string = yield call([aesClient, aesClient.decrypt], encryptedToken);
@@ -29,38 +32,27 @@ export function* globalCheckLogin() {
 
     // Check if the token is expired
     if (token.expiredAt < Date.now()) {
-      yield put(globalActions.logout());
+      yield put(globalActions.checkLoginFail());
       return;
     }
 
-    yield put(globalActions.loginSuccess(token));
-  } catch (e: unknown) {
-    let systemError: SystemError = {
-      relatedAction: globalActions.checkLogin.type,
-      title: '',
-      content: '',
-      code: SystemErrorCode.SYSTEM_OTHER_ERROR,
-    };
+    const response: BaseAPIResponse = yield call(authAPI.check, token.accessToken);
 
-    if (e instanceof Error) {
-      const error = e as Error;
-      systemError = {
-        ...systemError,
-        title: e.name ?? 'Error',
-        content: error.message,
-        code: SystemErrorCode.SYSTEM_OTHER_ERROR,
-      };
-    } else {
-      console.error('An unexpected error occurred:', e);
-      systemError = {
-        ...systemError,
-        title: 'Error',
-        content: 'An unexpected error occurred',
-        code: SystemErrorCode.SYSTEM_OTHER_ERROR,
-      };
+    if (!response.status) {
+      yield put(globalActions.checkLoginFail());
+      return;
     }
 
-    yield put(globalActions.loginFail(systemError));
+    yield put(globalActions.checkLoginSuccess(token));
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      const error = e as Error;
+      console.error('An error occurred:', error);
+    } else {
+      console.error('An unexpected error occurred:', e);
+    }
+
+    yield put(globalActions.checkLoginFail());
   }
 }
 

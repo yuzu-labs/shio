@@ -7,6 +7,14 @@ const authAPI = {
         loginCipher,
       })
       .then((response) => response.data),
+  check: (token: string) =>
+    client
+      .get('/auth/check', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => response.data),
 };
 
 export default authAPI;
