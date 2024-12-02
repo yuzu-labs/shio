@@ -13,6 +13,7 @@ export type TranscriptAPIResponse = BaseAPIResponse & {
 
 type BaseAPIResponse = {
   status: boolean;
+  message?: string;
 };
 
 export namespace YoutubeAPIResponse {

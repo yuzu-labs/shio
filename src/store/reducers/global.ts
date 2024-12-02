@@ -5,6 +5,7 @@ import { SummarizerState } from '../../models/enum/global';
 
 interface GlobalState {
   loading: boolean;
+  checkingLogin: boolean;
   isLoggedIn: boolean;
   errorToastOpen: boolean;
   error?: SystemError;
@@ -16,6 +17,7 @@ interface GlobalState {
 
 const initialState: GlobalState = {
   loading: false,
+  checkingLogin: false,
   isLoggedIn: false,
   errorToastOpen: false,
 
@@ -28,8 +30,23 @@ const globalSlice = createSlice({
   reducers: {
     // login
     checkLogin(state) {
-      state.loading = true;
+      state.checkingLogin = true;
     },
+    checkLoginSuccess(state, action: PayloadAction<BearerToken>) {
+      state.checkingLogin = false;
+      state.isLoggedIn = true;
+      state.token = action.payload;
+    },
+    checkLoginFail(state) {
+      if (localStorage.getItem('token')) {
+        localStorage.removeItem('token');
+      }
+
+      state.checkingLogin = false;
+      state.isLoggedIn = false;
+      state.token = undefined;
+    },
+    checkAICompatibility(state) {},
     login(state, action: PayloadAction<{ loginPlainText: string }>) {
       state.loading = true;
     },

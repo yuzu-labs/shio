@@ -1,15 +1,43 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box } from '@mui/joy';
 import { LandingContainer, LoadingContainer, ReportContainer } from '../../components/summarizer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { SummarizerState } from '../../models/enum/global';
+import { SummarizerState, SystemErrorCode } from '../../models/enum/global';
 import styles from './App.module.scss';
 import { YuzuFadeInOut } from '../../components/transition';
+import { globalActions } from '../../store/reducers';
+import { GeneralModal } from '../../components/feedback';
 
 function App() {
   const [activeContainer, setActiveContainer] = useState<'landing' | 'loading' | 'report'>('landing');
-  const { summarizerState } = useSelector((state: RootState) => state.global);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalContent, setModalContent] = useState('');
+  const [modalConfirmAction, setModalConfirmAction] = useState('');
+  const [modalState, setModalState] = useState(SystemErrorCode.BROWSER_NOT_SUPPORTED);
+  const { error, summarizerState } = useSelector((state: RootState) => state.global);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(globalActions.checkAICompatibility());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!error) return;
+
+    if (error.relatedAction === globalActions.checkAICompatibility.type) {
+      setModalTitle('Browser not supported');
+      setModalContent(
+        "Your browser doesn't support the Chrome Build-in AI. If you're on Chrome, join the Early Preview Program to enable it."
+      );
+      setModalConfirmAction('Join Early Preview Program');
+      setModalState(SystemErrorCode.BROWSER_NOT_SUPPORTED);
+      setModalOpen(true);
+    }
+  }, [error]);
 
   useEffect(() => {
     switch (summarizerState) {
@@ -30,6 +58,15 @@ function App() {
         break;
     }
   }, [summarizerState]);
+
+  const handleModalConfirm = () => {
+    switch (modalState) {
+      case SystemErrorCode.BROWSER_NOT_SUPPORTED:
+        window.open('https://developer.chrome.com/blog/august2024-summarization-ai');
+        return;
+    }
+    setModalOpen(false);
+  };
 
   const renderContainer = useMemo(() => {
     switch (activeContainer) {
@@ -66,6 +103,13 @@ function App() {
           {renderContainer}
         </Box>
       </YuzuFadeInOut>
+      <GeneralModal
+        open={modalOpen}
+        title={modalTitle}
+        content={modalContent}
+        confirmText={modalConfirmAction}
+        onConfirmAction={handleModalConfirm}
+      />
     </>
   );
 }

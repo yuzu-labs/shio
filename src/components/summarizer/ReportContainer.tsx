@@ -222,7 +222,7 @@ const ReportContainer = (props: Props) => {
           sx={{
             display: 'none', // TODO: implement this section and remove this line
             bgcolor: 'neutral.100',
-            borderRadius: 'var(--joy-radius-md)',
+            borderRadius: 'md',
             padding: 2,
             margin: -2,
           }}>

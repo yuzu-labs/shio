@@ -7,11 +7,12 @@ import { NavBar } from '../../components/navigation';
 import { Box } from '@mui/joy';
 import { globalActions } from '../../store/reducers';
 import { ErrorToast } from '../../components/feedback';
+import Loading from '../pages/Loading';
 
 type Props = {};
 
 const Default = (props: Props) => {
-  const { isLoggedIn, error, errorToastOpen } = useSelector((state: RootState) => state.global);
+  const { isLoggedIn, checkingLogin, error, errorToastOpen } = useSelector((state: RootState) => state.global);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -22,12 +23,15 @@ const Default = (props: Props) => {
     <Box sx={{ height: '100vh' }}>
       <NavBar sx={{ position: 'relative', zIndex: '2' }} />
       <Box sx={{ minHeight: 'calc(100% - 72px)', height: 0 }}>
-        <Routes>
-          <Route path="/" element={isLoggedIn ? <AppPage /> : <Navigate to="/auth" replace />} />
-          <Route path="/auth" element={!isLoggedIn ? <AuthPage /> : <Navigate to="/" replace />} />
-          <Route path="/test/" element={<TestPage />} />
-          <Route path="/test/mesh" element={<MeshPage />} />
-        </Routes>
+        {!checkingLogin && (
+          <Routes>
+            <Route path="/" element={isLoggedIn ? <AppPage /> : <Navigate to="/auth" replace />} />
+            <Route path="/auth" element={!isLoggedIn ? <AuthPage /> : <Navigate to="/" replace />} />
+            <Route path="/test/" element={<TestPage />} />
+            <Route path="/test/mesh" element={<MeshPage />} />
+          </Routes>
+        )}
+        {checkingLogin && <Loading />}
       </Box>
       <ErrorToast open={errorToastOpen} onClose={() => dispatch(globalActions.closeErrorToast())}>
         {error?.content || 'An error occurred'}
