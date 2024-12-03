@@ -66,6 +66,7 @@
     "@types/gapi.youtube": "^3.0.40",
     "@types/react-transition-group": "^4.4.11",
     "@types/youtube-player": "^5.5.11",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "serve": "^14.2.4",
     "user-agent-data-types": "^0.4.2"
   }
