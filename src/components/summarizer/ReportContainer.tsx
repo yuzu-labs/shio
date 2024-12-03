@@ -66,7 +66,16 @@ const ReportContainer = (props: Props) => {
         }, 3000);
         break;
       case 'keypoint':
-        navigator.clipboard.writeText('keypoint');
+        if (!keyPoints || keyPoints.length === 0) return;
+
+        const htmlContent = `<ul>${keyPoints.map((point) => `<li>${point}</li>`).join('')}</ul>`;
+        const plainText = keyPoints.map((point) => `- ${point}`).join('\n');
+        navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([plainText], { type: 'text/plain' }),
+            'text/html': new Blob([htmlContent], { type: 'text/html' }),
+          }),
+        ]);
         setKeypointCopied(true);
 
         // wait for 3 seconds before resetting the copied state
@@ -76,7 +85,16 @@ const ReportContainer = (props: Props) => {
         break;
 
       case 'actionItem':
-        navigator.clipboard.writeText('actionItem');
+        if (!actionItems || actionItems.length === 0) return;
+
+        const htmlContentItems = `<ul>${actionItems.map((item) => `<li>${item}</li>`).join('')}</ul>`;
+        const actionItemsText = actionItems.map((item) => `- ${item}`).join('\n');
+        navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([actionItemsText], { type: 'text/plain' }),
+            'text/html': new Blob([htmlContentItems], { type: 'text/html' }),
+          }),
+        ]);
         setActionItemCopied(true);
 
         // wait for 3 seconds before resetting the copied state
