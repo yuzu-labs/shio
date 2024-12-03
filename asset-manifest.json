@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/shio/static/css/main.ccdd181a.css",
-    "main.js": "/shio/static/js/main.8808102e.js",
+    "main.js": "/shio/static/js/main.1835899c.js",
     "static/js/206.e1d20f45.chunk.js": "/shio/static/js/206.e1d20f45.chunk.js",
     "index.html": "/shio/index.html"
   },
   "entrypoints": [
     "static/css/main.ccdd181a.css",
-    "static/js/main.8808102e.js"
+    "static/js/main.1835899c.js"
   ]
 }
